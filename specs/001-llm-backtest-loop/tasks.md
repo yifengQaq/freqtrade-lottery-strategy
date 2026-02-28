@@ -6,7 +6,7 @@
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: Can run in parallel (different files, no dependencies)
-- **[Story]**: Which user story (US1=单轮迭代, US2=多轮闭环, US3=walk-forward, US4=版本管理)
+- **[Story]**: Which user story (US1=单轮迭代, US2=多轮闭环, US3=walk-forward, US4=版本管理, US5=自动纠错+因子生成)
 
 ## Path Conventions
 
@@ -87,6 +87,7 @@
 
 - [ ] T022 [US2] 实现 `agent/orchestrator.py` — 主循环编排器：
   - `run_iteration_loop()`: 循环调用 DeepSeek → Modifier → Runner → Evaluator
+    - 回测报错时调用 ErrorRecovery 执行“分诊→修复→重试”
   - 终止条件检测：连续 3 轮 score 无提升 / 达到 max_rounds
   - 过拟合回退：OOS/IS < 0.6 时回退上一版本
   - 每轮结果写入 `results/iteration_log.json`
@@ -150,6 +151,37 @@
 
 ---
 
+## Phase 8: User Story 5 — 报错自动纠错 + 因子生成迭代 (Priority: P2)
+
+**Goal**: 回测失败时自动修复恢复；引入候选因子实验池，像 RD-Agent 一样“失败反馈驱动下一轮”
+
+**Independent Test**: 人工注入语法错误/指标缺失/配置错误，系统能自动修复或有界回滚；因子候选能被生成并筛选
+
+### Tests for User Story 5
+
+- [ ] T038 [P] [US5] 编写单元测试 `tests/unit/test_error_recovery.py` — 覆盖错误分诊、修复 Prompt 生成、最大重试、失败回滚
+- [ ] T039 [P] [US5] 编写单元测试 `tests/unit/test_factor_lab.py` — 覆盖候选因子生成、去重、晋级/隔离判定
+- [ ] T040 [P] [US5] 扩展集成测试 `tests/integration/test_orchestrator.py` — 注入 backtest 失败，验证“自动纠错→重试→恢复”链路
+
+### Implementation for User Story 5
+
+- [ ] T041 [US5] 实现 `agent/error_recovery.py` — ErrorRecoveryManager：
+    - `classify_error(logs)`：syntax/runtime/config/data 分诊
+    - `build_fix_prompt(...)`：拼接错误上下文给 LLM
+    - `attempt_fix(max_retries=3)`：修复补丁 → 校验 → 回测重试
+    - `rollback_on_exhausted()`：超过阈值自动回滚并打 quarantined 标记
+- [ ] T042 [US5] 实现 `agent/factor_lab.py` — FactorLab：
+    - 生成候选因子（波动率过滤/趋势过滤/动量过滤）
+    - 限制每轮 1-2 小改动（遵守 change_scope）
+    - 记录实验账本 `results/experiments/factor_trials.jsonl`
+    - 根据门控与得分决定 promoted / active / quarantined
+- [ ] T043 [US5] 更新 `agent/deepseek_client.py`，新增 `generate_fix_patch()` 与 `generate_factor_candidates()` 接口
+- [ ] T044 [US5] 更新 `agent/orchestrator.py`，接入 ErrorRecovery + FactorLab 的主循环策略
+- [ ] T045 [US5] 更新 `scripts/run_agent.py`，新增 CLI 参数：`--auto-repair`, `--repair-max-retries`, `--enable-factor-lab`, `--factor-candidates`
+- [ ] T046 [US5] 运行 US5 测试并验证自动恢复成功率统计（目标 >=70%）
+
+---
+
 ## Dependencies
 
 ```
@@ -165,6 +197,8 @@ Phase 5 (US3: walk-forward — 依赖 US2 的 orchestrator)
     ↓
 Phase 6 (US4: 版本管理 — 依赖 US1 的 strategy_modifier)
     ↓
+Phase 8 (US5: 自动纠错+因子生成 — 依赖 US2/US3/US4)
+    ↓
 Phase 7 (Polish — 依赖所有 above)
 ```
 
@@ -178,19 +212,21 @@ Phase 7 (Polish — 依赖所有 above)
 
 1. **MVP = Phase 1 + 2 + 3**: 实现后即可手动触发单轮迭代
 2. **Full Loop = + Phase 4**: 自动化多轮循环
-3. **Production = + Phase 5 + 6 + 7**: 防过拟合 + 版本管理 + 文档
+3. **Resilience = + Phase 8**: 自动纠错 + 因子实验闭环
+4. **Production = + Phase 5 + 6 + 7 + 8**: 防过拟合 + 版本管理 + 自修复 + 文档
 
 ## Summary
 
 | Metric | Value |
 |--------|-------|
-| Total Tasks | 37 |
+| Total Tasks | 46 |
 | Phase 1 (Setup) | 5 |
 | Phase 2 (Foundation) | 6 |
 | Phase 3 (US1 MVP) | 9 |
 | Phase 4 (US2 Loop) | 3 |
 | Phase 5 (US3 WF) | 4 |
 | Phase 6 (US4 Versions) | 4 |
+| Phase 8 (US5 Recovery+Factors) | 9 |
 | Phase 7 (Polish) | 5 |
-| Parallel Opportunities | 14 tasks |
+| Parallel Opportunities | 17 tasks |
 | MVP Scope | US1 (Phase 1-3, 20 tasks) |

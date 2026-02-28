@@ -87,6 +87,46 @@ Agent 运行配置。
 | score | float | 该版本的评估得分 |
 | changes_made | str | 变更摘要 |
 
+### ErrorIncident
+
+一次失败事件与分诊结果。
+
+| Field | Type | Description |
+|-------|------|-------------|
+| incident_id | str | 错误事件唯一ID |
+| round | int | 关联轮次 |
+| stage | str | 触发阶段（syntax/backtest/eval） |
+| error_type | str | syntax/runtime/config/data |
+| traceback | str | 原始错误栈 |
+| created_at | str (ISO 8601) | 记录时间 |
+| resolved | bool | 是否已恢复 |
+
+### FixAttempt
+
+一次自动修复尝试。
+
+| Field | Type | Description |
+|-------|------|-------------|
+| incident_id | str | 关联 ErrorIncident |
+| attempt_no | int | 第几次修复（1..max） |
+| fix_summary | str | 修复内容摘要 |
+| patch_applied | bool | 是否成功应用补丁 |
+| retry_backtest_ok | bool | 重试回测是否通过 |
+| failed_reason | str | 失败原因（可空） |
+
+### FactorCandidate
+
+候选因子及其实验状态。
+
+| Field | Type | Description |
+|-------|------|-------------|
+| candidate_id | str | 候选唯一ID |
+| round | int | 来源轮次 |
+| factor_family | str | volatility/trend/momentum/filter |
+| params | dict | 参数定义 |
+| status | str | active/promoted/quarantined |
+| score | float | 最新得分 |
+
 ## Relationships
 
 ```
@@ -94,6 +134,9 @@ AgentConfig ──1:N──▶ IterationRound
 IterationRound ──1:1──▶ BacktestMetrics
 IterationRound ──1:1──▶ EvalResult
 IterationRound ──1:1──▶ StrategyVersion
+IterationRound ──1:N──▶ ErrorIncident
+ErrorIncident ──1:N──▶ FixAttempt
+IterationRound ──1:N──▶ FactorCandidate
 ```
 
 ## State Transitions
@@ -105,6 +148,8 @@ IterationRound.status:
                       ──▶ failed    (语法错误 / 安全检查失败 / 回测超时)
                       ──▶ skipped   (API 超时后跳过)
                       ──▶ overfitting (OOS/IS < 0.6)
+                      ──▶ recovering (进入自动修复链路)
+                      ──▶ rolled_back (修复失败后回滚)
 ```
 
 ## Persistence
@@ -114,3 +159,5 @@ IterationRound.status:
 - `results/iteration_log.json`: `list[IterationRound]` 的 JSON 数组
 - `results/strategy_versions/round_NNN_*.py`: 策略文件快照
 - `results/backtest_outputs/round_NNN_*.json`: 原始回测结果
+- `results/error_incidents.jsonl`: ErrorIncident + FixAttempt 记录
+- `results/experiments/factor_trials.jsonl`: FactorCandidate 及实验结果账本

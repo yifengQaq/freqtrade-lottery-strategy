@@ -27,6 +27,50 @@
       "description": "可选的配置修改（JSON merge patch）",
       "default": {}
     },
+    "mode": {
+      "type": "string",
+      "description": "本次输出模式",
+      "enum": ["optimize", "repair", "factor_gen"],
+      "default": "optimize"
+    },
+    "error_diagnosis": {
+      "type": "object",
+      "description": "当 mode=repair 时的错误分诊信息",
+      "properties": {
+        "error_type": {
+          "type": "string",
+          "enum": ["syntax", "runtime", "config", "data", "unknown"]
+        },
+        "root_cause": {
+          "type": "string"
+        },
+        "fix_plan": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "factor_candidates": {
+      "type": "array",
+      "description": "当 mode=factor_gen 时返回的候选因子",
+      "items": {
+        "type": "object",
+        "required": ["factor_family", "params", "expected_effect"],
+        "properties": {
+          "factor_family": {
+            "type": "string",
+            "enum": ["volatility", "trend", "momentum", "filter"]
+          },
+          "params": {
+            "type": "object"
+          },
+          "expected_effect": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
     "next_action": {
       "type": "string",
       "description": "Agent 对下一轮的建议",

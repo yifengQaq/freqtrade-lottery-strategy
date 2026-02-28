@@ -5,7 +5,7 @@
 
 ## Summary
 
-构建一个"DeepSeek LLM Agent + Freqtrade Backtest"闭环系统，自动完成：策略代码分析 → 参数/逻辑修改 → 回测执行 → 结果评估 → 再迭代。核心是一个 Python CLI 工具，以 Agent 模块调用 DeepSeek API，以 Runner 模块执行 freqtrade 回测，以 Evaluator 模块打分筛选，以 Modifier 模块安全写入代码，循环最多 20 轮或提前终止。
+构建一个"DeepSeek LLM Agent + Freqtrade Backtest"闭环系统，自动完成：策略代码分析 → 参数/逻辑修改 → 回测执行 → 结果评估 → 再迭代。系统包含 RD-Agent 风格的“失败驱动自修复”能力：当语法/运行时/配置错误出现时，自动分诊并触发纠错补丁，最多重试 3 次后回滚。并增加“因子候选实验工厂（Factor Lab）”，自动生成小步候选并通过门控筛选晋级。
 
 ## Technical Context
 
@@ -27,6 +27,7 @@
 - [x] 可测试：每个模块独立可测
 - [x] 安全约束：Agent 修改受安全门控限制
 - [x] 版本管理：每轮迭代有备份和回滚能力
+- [x] 失败可恢复：错误分诊 + 自动纠错 + 有界重试 + 回滚
 
 ## Project Structure
 
@@ -54,6 +55,8 @@ agent/                           # Agent 核心模块
 ├── evaluator.py                 # 结果评估与评分
 ├── strategy_modifier.py         # 策略代码安全写入
 ├── orchestrator.py              # 主循环编排器
+├── error_recovery.py            # 错误分诊与自动纠错管理
+├── factor_lab.py                # 候选因子生成与实验筛选
 └── prompts/
     └── system_prompt.md         # Agent 系统提示词
 
@@ -76,6 +79,9 @@ results/                         # 运行结果（git ignored）
 ├── backtest_outputs/            # 回测结果 JSON
 └── iteration_log.json           # 全局迭代日志
 
+results/experiments/             # 候选因子实验账本
+└── factor_trials.jsonl
+
 tests/                           # 测试
 ├── unit/
 │   ├── test_deepseek_client.py
@@ -85,8 +91,12 @@ tests/                           # 测试
 └── integration/
     └── test_orchestrator.py
 
+tests/unit/
+├── test_error_recovery.py
+└── test_factor_lab.py
+
 Input/                           # 原始参考资料（只读）
 └── ...
 ```
 
-**Structure Decision**: 采用单项目 flat 结构。`agent/` 为核心库，`scripts/` 为 CLI 入口，`strategies/` + `controllers/` 为 freqtrade 策略侧代码，`config/` 为配置，`tests/` 为测试。
+**Structure Decision**: 采用单项目 flat 结构。`agent/` 为核心库，`scripts/` 为 CLI 入口，`strategies/` + `controllers/` 为 freqtrade 策略侧代码，`config/` 为配置，`tests/` 为测试，并新增 `error_recovery.py` 与 `factor_lab.py` 支撑自动纠错和因子实验闭环。
