@@ -1,20 +1,22 @@
 {
     "stake_currency": "USDT",
-    "stake_amount": 100,
+    "stake_amount": "unlimited",
     "dry_run": true,
+    "dry_run_wallet": 100,
     "trading_mode": "futures",
     "margin_mode": "isolated",
     "max_open_trades": 1,
     "candle_type_def": "futures",
     "minimal_roi": {
-        "0": 10.0,
-        "1440": 5.0,
-        "4320": 2.0
+        "0": 1.5,
+        "60": 1.0,
+        "240": 0.5,
+        "720": 0.3
     },
-    "stoploss": -0.95,
+    "stoploss": -0.50,
     "trailing_stop": true,
-    "trailing_stop_positive": 0.5,
-    "trailing_stop_positive_offset": 0.8,
+    "trailing_stop_positive": 0.20,
+    "trailing_stop_positive_offset": 0.40,
     "trailing_only_offset_is_reached": true,
     "entry_pricing": {
         "price_side": "other",

@@ -4,7 +4,11 @@ agent:
   stale_rounds_limit: 3
   deepseek_model: "deepseek-chat"
   freqtrade_dir: "${FREQTRADE_DIR}"
+  freqtrade_bin: "${FREQTRADE_BIN}"
+  user_data: "user_data"
   strategy_name: "LotteryMindsetStrategy"
+  strategy_dir: "strategies"
+  backup_dir: "results/strategy_versions"
   config_path: "config/config_backtest.json"
   timerange_is: "20250901-20251130"
   timerange_oos: "20251201-20251231"
@@ -13,3 +17,4 @@ agent:
   repair_max_retries: 3
   enable_factor_lab: false
   factor_candidates: 5
+  results_dir: "results"

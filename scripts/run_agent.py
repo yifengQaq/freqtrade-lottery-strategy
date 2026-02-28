@@ -24,6 +24,13 @@ import yaml
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+# Load .env before any module reads env vars
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
+except ImportError:
+    pass
+
 from agent.orchestrator import Orchestrator  # noqa: E402
 from agent.strategy_modifier import StrategyModifier  # noqa: E402
 

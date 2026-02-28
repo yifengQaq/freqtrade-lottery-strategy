@@ -38,8 +38,8 @@
 | total_trades | int | 总交易次数 |
 | avg_profit_per_trade_pct | float | 每笔平均利润% |
 | avg_trade_duration_hours | float | 平均持仓时长(小时) |
-| stake_limit_hit_count | int | 超限次数 |
-| weekly_target_hit_rate | float | 周达标率 |
+| stake_limit_hit_count | int | （已废弃：ALL IN 模型下无意义，保留兼容） |
+| weekly_target_hit_rate | float | 周达标率（余额 >= 1000 的周数占比） |
 | total_weeks | int | 覆盖总周数 |
 | target_hit_weeks | int | 达标周数 |
 | monthly_net_profit_avg | float | 月均净利润 |
@@ -167,6 +167,7 @@ Story 目标差距向量。
 | exhausted_budget | bool | 是否亏完 100 预算 |
 | action_next_week | str | reset_budget_100 / cooldown_dryrun |
 | cooldown_triggered | bool | 是否触发冷却 |
+| rolling_high_balance | float | 本周滚仓最高余额 |
 
 ## Relationships
 

@@ -56,7 +56,7 @@ Score = monthly_avg_profit * 0.4
 | total_trades | >= 50 | 统计显著性 |
 | stake_limit_hit_count | == 0 | 不允许超限 |
 | monthly_net_profit_avg | > 0 | 必须整体盈利 |
-| max_drawdown_pct | <= 95% | 单周最多亏完预算 |
+| max_drawdown_pct | <= 95% | ALL IN 下单周可能亏完全部预算 |
 
 ## 4. 安全约束
 
@@ -66,9 +66,11 @@ Score = monthly_avg_profit * 0.4
 1. **语法检查**: `ast.parse()` 验证 Python 语法
 2. **安全规则**:
    - 杠杆 <= 20x
-   - 止损 >= -0.98
+   - 止损 >= -0.60（ALL IN 下止损范围更窄）
    - WeeklyBudgetController 引用必须存在
-   - 不允许复利模式
+   - stake_amount = "unlimited" 不可修改
+   - custom_stake_amount 方法不可删除
+   - max_open_trades = 1 不可修改
 3. **原子写入**: 先写 .tmp 文件，通过后 rename，失败自动恢复
 
 ## 5. Walk-Forward 验证

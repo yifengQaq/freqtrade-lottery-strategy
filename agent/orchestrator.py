@@ -15,6 +15,7 @@ Terminates when:
 import json
 import logging
 import os
+import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -117,6 +118,9 @@ class Orchestrator:
                     "weekly", "weekly_settlement_reports.jsonl",
                 ),
             )
+
+        # User data dir (for syncing strategy after modification)
+        self.user_data_dir: str = config.get("user_data", "user_data")
 
         # System prompt for the LLM
         self.system_prompt: str = self._load_system_prompt()
@@ -346,6 +350,9 @@ class Orchestrator:
             "backup_path", ""
         )
 
+        # 4b. Sync modified strategy to user_data/strategies/ for freqtrade
+        self._sync_strategy_to_userdata()
+
         # 5. Run backtest
         timerange = self.config.get("timerange_is")
         bt_result = self.backtest_runner.run(timerange=timerange)
@@ -462,6 +469,8 @@ class Orchestrator:
     def _build_backtest_runner(cfg: dict) -> BacktestRunner:
         return BacktestRunner(
             freqtrade_dir=cfg.get("freqtrade_dir", ""),
+            freqtrade_bin=cfg.get("freqtrade_bin", "freqtrade"),
+            user_data=cfg.get("user_data", "user_data"),
             config_path=cfg.get("config_path", "config/config_backtest.json"),
             strategy_name=cfg.get("strategy_name", "LotteryMindsetStrategy"),
             timerange=cfg.get("timerange_is"),
@@ -473,6 +482,18 @@ class Orchestrator:
             strategy_dir=cfg.get("strategy_dir", "strategies"),
             backup_dir=cfg.get("backup_dir", "results/strategy_versions"),
         )
+
+    def _sync_strategy_to_userdata(self):
+        """Copy the strategy file from strategies/ to user_data/strategies/ for freqtrade."""
+        src = self.strategy_modifier.strategy_path
+        dest_dir = os.path.join(self.user_data_dir, "strategies")
+        os.makedirs(dest_dir, exist_ok=True)
+        dest = os.path.join(dest_dir, self.strategy_modifier.strategy_filename)
+        try:
+            shutil.copy2(src, dest)
+            logger.info("Synced strategy to %s", dest)
+        except Exception as exc:
+            logger.warning("Failed to sync strategy to user_data: %s", exc)
 
     @staticmethod
     def _load_system_prompt() -> str:

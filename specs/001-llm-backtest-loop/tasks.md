@@ -37,9 +37,9 @@
 
 **⚠️ CRITICAL**: 策略文件和资金控制器是所有迭代的基础
 
-- [ ] T006 将 `Input/v1_weekly_budget_controller.py` 复制为 `controllers/weekly_budget_controller.py`（不可修改基础）
-- [ ] T007 创建 `strategies/LotteryMindsetStrategy.py` — 基于 Input/ 中的 v1 版本，实现完整的 FreqTrade IStrategy 子类，集成 WeeklyBudgetController，包含 ADX + Bollinger + ATR 指标体系
-- [ ] T008 创建 `config/config_backtest.json` — Freqtrade 回测配置（futures, isolated, VolumePairList top 30, fee/slippage 模型）
+- [ ] T006 创建 `controllers/weekly_budget_controller.py` — 周内滚仓复利资金控制器：update_balance() 更新余额、get_stake_amount() 返回全部余额、should_stop() 检测达标/亏完、progress 属性追踪滚仓进度（不可修改基础）
+- [ ] T007 创建 `strategies/LotteryMindsetStrategy.py` — 基于滚仓复利模型的 FreqTrade IStrategy 子类，stake_amount="unlimited"，custom_stake_amount() ALL IN 当前余额，集成 WeeklyBudgetController，包含 ADX + Bollinger + ATR 指标体系
+- [ ] T008 创建 `config/config_backtest.json` — Freqtrade 回测配置（futures, isolated, stake_amount: "unlimited", dry_run_wallet: 100, max_open_trades: 1, StaticPairList 15 对）
 - [ ] T009 [P] 创建 `config/iteration_rules.yaml` — 从 Input/v1_agent_iteration_rules.yaml 复制，迭代规则定义
 - [ ] T010 [P] 创建 `config/agent_config.yaml` — Agent 运行配置（max_rounds, model, freqtrade_dir, timeranges）
 - [ ] T011 [P] 创建 `agent/prompts/system_prompt.md` — 从 Input/v1_agent_system_prompt.md 复制，DeepSeek 系统提示词
@@ -214,7 +214,7 @@
 
 ## Phase 10: User Story 7 — 周结算与未达标周处理 (Priority: P1)
 
-**Goal**: 明确“未达标未亏完”周的处理规则，保证非复利周策略一致性
+**Goal**: 明确"未达标未亏完"周的处理规则，保证周内滚仓复利、跨周重置的一致性
 
 **Independent Test**: 三态周结果（达标/亏完/未达标未亏完）都能稳定输出结算动作和下周策略
 
@@ -271,7 +271,7 @@ Phase 7 (Polish — 依赖所有 above)
 2. **Full Loop = + Phase 4**: 自动化多轮循环
 3. **Resilience = + Phase 8**: 自动纠错 + 因子实验闭环
 4. **Adaptive Build = + Phase 9**: 多回测 + Dry Run 对比驱动动态构建
-5. **Weekly Governance = + Phase 10**: 周结算三态 + 冷却机制，确保非复利执行一致性
+5. **Weekly Governance = + Phase 10**: 周结算三态 + 冷却机制，确保跨周不复利、周内滚仓复利的一致性
 6. **Production = + Phase 5 + 6 + 7 + 8 + 9 + 10**: 防过拟合 + 版本管理 + 自修复 + 动态构建 + 周治理 + 文档
 
 ## Summary

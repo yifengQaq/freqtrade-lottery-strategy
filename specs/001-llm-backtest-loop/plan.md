@@ -5,7 +5,7 @@
 
 ## Summary
 
-构建一个"DeepSeek LLM Agent + Freqtrade Backtest"闭环系统，自动完成：策略代码分析 → 参数/逻辑修改 → 回测执行 → 结果评估 → 再迭代。系统包含 RD-Agent 风格的“失败驱动自修复”能力：当语法/运行时/配置错误出现时，自动分诊并触发纠错补丁，最多重试 3 次后回滚；并增加“因子候选实验工厂（Factor Lab）”。在此基础上新增“多回测 + Dry Run 对比优化层”：通过 ComparisonMatrix 与 TargetGapVector 驱动 LLM 动态调参，向 Story 目标逼近。周资金管理采用三态周结算（达标/亏完/周末结算），未达标未亏完时周末强制结算并下周重置预算。
+构建一个"DeepSeek LLM Agent + Freqtrade Backtest"闭环系统，自动完成：策略代码分析 → 参数/逻辑修改 → 回测执行 → 结果评估 → 再迭代。系统包含 RD-Agent 风格的"失败驱动自修复"能力：当语法/运行时/配置错误出现时，自动分诊并触发纠错补丁，最多重试 3 次后回滚；并增加"因子候选实验工厂（Factor Lab）"。在此基础上新增"多回测 + Dry Run 对比优化层"：通过 ComparisonMatrix 与 TargetGapVector 驱动 LLM 动态调参，向 Story 目标逼近。策略核心为"周内滚仓复利"——每周 100 USDT 起始，stake_amount = "unlimited" ALL IN 当前余额，盈利后本金+利润全额再开仓，多笔滚到 1000 USDT 目标；跨周重置预算。周结算采用三态状态机（达标/亏完/周末结算），未达标未亏完时周末强制结算并下周重置。
 
 ## Technical Context
 
@@ -64,9 +64,9 @@ agent/                           # Agent 核心模块
     └── system_prompt.md         # Agent 系统提示词
 
 strategies/                      # Freqtrade 策略文件
-└── LotteryMindsetStrategy.py    # 彩票心态策略（Agent 修改目标）
+└── LotteryMindsetStrategy.py    # 周内滚仓复利策略（Agent 修改目标）
 
-controllers/                     # 资金管理控制器（不可修改）
+controllers/                     # 资金管理控制器（滚仓核心，不可修改）
 └── weekly_budget_controller.py
 
 config/                          # 配置文件
