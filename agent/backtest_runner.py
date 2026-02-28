@@ -91,6 +91,30 @@ class BacktestRunner:
                     "result_file": "",
                 }
 
+            # Freqtrade sometimes exits 0 even on strategy errors (TypeError etc.)
+            # Check stderr for Python exceptions that indicate broken strategy code
+            combined_output = (result.stdout or "") + (result.stderr or "")
+            _fatal_patterns = [
+                "TypeError:", "NameError:", "AttributeError:",
+                "KeyError:", "ValueError:", "SyntaxError:",
+                "ImportError:", "ModuleNotFoundError:",
+                "ZeroDivisionError:", "IndexError:",
+            ]
+            for pat in _fatal_patterns:
+                if pat in combined_output:
+                    err_msg = combined_output[combined_output.index(pat):][:500]
+                    logger.error(
+                        "Strategy runtime error (exit 0 but fatal): %s",
+                        err_msg,
+                    )
+                    return {
+                        "success": False,
+                        "error": err_msg,
+                        "raw_results": {},
+                        "metrics": {},
+                        "result_file": "",
+                    }
+
             # Parse the latest result file
             result_file = self._find_latest_result()
             if not result_file:

@@ -69,33 +69,23 @@ class WeeklyBudgetController:
 class LotteryMindsetStrategy(IStrategy):
     INTERFACE_VERSION = 3
     timeframe = "15m"
-    stoploss = -0.40
+    stoploss = -0.30
     minimal_roi = {
-        "0": 0.8,
-        "30": 0.5,
-        "120": 0.3,
-        "360": 0.1,
+        "0": 1.5,
     }
-    trailing_stop = True
-    trailing_stop_positive = 0.15
-    trailing_stop_positive_offset = 0.30
-    trailing_only_offset_is_reached = True
+    trailing_stop = False
     max_open_trades = 1
     stake_amount = "unlimited"
     leverage_value = 3
-    macd_fast = IntParameter(8, 16, default=12, space="buy", optimize=True)
-    macd_slow = IntParameter(20, 34, default=26, space="buy", optimize=True)
-    macd_signal = IntParameter(5, 14, default=9, space="buy", optimize=True)
     rsi_period = IntParameter(7, 21, default=14, space="buy", optimize=True)
-    rsi_overbought = IntParameter(70, 90, default=75, space="buy", optimize=True)
-    rsi_oversold = IntParameter(10, 30, default=25, space="buy", optimize=True)
-    atr_period = IntParameter(7, 21, default=14, space="buy", optimize=True)
-    atr_ma_window = IntParameter(20, 100, default=50, space="buy", optimize=True)
-    atr_multiplier = DecimalParameter(0.8, 2.0, default=1.2, decimals=1, space="buy", optimize=True)
+    rsi_oversold = IntParameter(20, 40, default=30, space="buy", optimize=True)
+    rsi_overbought = IntParameter(60, 80, default=70, space="buy", optimize=True)
+    bbands_period = IntParameter(10, 30, default=20, space="buy", optimize=True)
+    bbands_std = DecimalParameter(1.5, 3.0, default=2.0, space="buy", optimize=True)
     adx_period = IntParameter(7, 28, default=14, space="buy", optimize=True)
     adx_threshold = IntParameter(15, 40, default=25, space="buy", optimize=True)
     process_only_new_candles = True
-    startup_candle_count: int = 50
+    startup_candle_count: int = 100
     use_exit_signal = True
     exit_profit_only = False
     order_types = {
@@ -141,60 +131,48 @@ class LotteryMindsetStrategy(IStrategy):
         return stake
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        macd = ta.MACD(
+        rsi = ta.RSI(dataframe, timeperiod=int(self.rsi_period.value))
+        dataframe["rsi"] = rsi
+        bbands_upper, bbands_middle, bbands_lower = ta.BBANDS(
             dataframe,
-            fastperiod=int(self.macd_fast.value),
-            slowperiod=int(self.macd_slow.value),
-            signalperiod=int(self.macd_signal.value),
+            timeperiod=int(self.bbands_period.value),
+            nbdevup=float(self.bbands_std.value),
+            nbdevdn=float(self.bbands_std.value)
         )
-        dataframe["macd"] = macd["macd"]
-        dataframe["macd_signal"] = macd["macdsignal"]
-        dataframe["macd_hist"] = macd["macdhist"]
-        dataframe["rsi"] = ta.RSI(dataframe, timeperiod=int(self.rsi_period.value))
-        dataframe["atr"] = ta.ATR(
-            dataframe, timeperiod=int(self.atr_period.value)
-        )
-        dataframe["atr_ma"] = dataframe["atr"].rolling(window=int(self.atr_ma_window.value)).mean()
-        dataframe["volume_ma"] = dataframe["volume"].rolling(window=20).mean()
-        dataframe["adx"] = ta.ADX(dataframe, timeperiod=int(self.adx_period.value))
+        dataframe["bbands_upper"] = bbands_upper
+        dataframe["bbands_lower"] = bbands_lower
+        adx = ta.ADX(dataframe, timeperiod=int(self.adx_period.value))
+        dataframe["adx"] = adx
         return dataframe
 
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         long_conditions = (
-            (dataframe["macd"] > dataframe["macd_signal"])
-            & (dataframe["rsi"] > 50)
+            (dataframe["adx"] > int(self.adx_threshold.value))
+            & (dataframe["close"] > dataframe["bbands_upper"])
             & (dataframe["rsi"] < int(self.rsi_overbought.value))
-            & (dataframe["atr"] > dataframe["atr_ma"] * float(self.atr_multiplier.value))
-            & (dataframe["volume"] > dataframe["volume_ma"])
-            & (dataframe["adx"] > int(self.adx_threshold.value))
         )
         dataframe.loc[long_conditions, "enter_long"] = 1
-        dataframe.loc[long_conditions, "enter_tag"] = "macd_cross_long"
+        dataframe.loc[long_conditions, "enter_tag"] = "adx_bb_rsi_breakout_long"
         short_conditions = (
-            (dataframe["macd"] < dataframe["macd_signal"])
-            & (dataframe["rsi"] < 50)
+            (dataframe["adx"] > int(self.adx_threshold.value))
+            & (dataframe["close"] < dataframe["bbands_lower"])
             & (dataframe["rsi"] > int(self.rsi_oversold.value))
-            & (dataframe["atr"] > dataframe["atr_ma"] * float(self.atr_multiplier.value))
-            & (dataframe["volume"] > dataframe["volume_ma"])
-            & (dataframe["adx"] > int(self.adx_threshold.value))
         )
         dataframe.loc[short_conditions, "enter_short"] = 1
-        dataframe.loc[short_conditions, "enter_tag"] = "macd_cross_short"
+        dataframe.loc[short_conditions, "enter_tag"] = "adx_bb_rsi_breakout_short"
         return dataframe
 
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         long_exit = (
-            (dataframe["macd"] < dataframe["macd_signal"])
-            | (dataframe["rsi"] > int(self.rsi_overbought.value))
+            (dataframe["close"] < dataframe["bbands_lower"])
         )
         dataframe.loc[long_exit, "exit_long"] = 1
-        dataframe.loc[long_exit, "exit_tag"] = "macd_revert_long"
+        dataframe.loc[long_exit, "exit_tag"] = "bb_revert_long"
         short_exit = (
-            (dataframe["macd"] > dataframe["macd_signal"])
-            | (dataframe["rsi"] < int(self.rsi_oversold.value))
+            (dataframe["close"] > dataframe["bbands_upper"])
         )
         dataframe.loc[short_exit, "exit_short"] = 1
-        dataframe.loc[short_exit, "exit_tag"] = "macd_revert_short"
+        dataframe.loc[short_exit, "exit_tag"] = "bb_revert_short"
         return dataframe
 
     def confirm_trade_entry(

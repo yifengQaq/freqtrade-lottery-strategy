@@ -418,9 +418,23 @@ class Orchestrator:
         if not rounds:
             return False, ""
 
+        limit = self.stale_rounds_limit
+
+        # Consecutive failure check: stop if last N rounds ALL failed
+        consecutive_fails = 0
+        for r in reversed(rounds):
+            if r["status"] in ("failed", "rolled_back"):
+                consecutive_fails += 1
+            else:
+                break
+        if consecutive_fails >= limit:
+            return True, (
+                f"Last {consecutive_fails} consecutive rounds failed "
+                f"(stale_rounds_limit={limit})"
+            )
+
         # Stale-rounds check: last N *successful* rounds show no improvement
         successful = [r for r in rounds if r["status"] == "success"]
-        limit = self.stale_rounds_limit
         if len(successful) >= limit:
             tail = successful[-limit:]
             scores = [r["score"] for r in tail]

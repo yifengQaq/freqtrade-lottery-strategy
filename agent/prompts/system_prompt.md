@@ -73,12 +73,62 @@
 - timeframe: 15m, 1h
 - **验证窗口**: 牛市(2021Q1) / 熊市(2022Q3) / 横盘(2023Q3) / 恢复(2024H1) / 近期(2025H1)
 
+## ⚠️ talib 正确用法（必须严格遵守，写错会导致 TypeError 崩溃！）
+
+```python
+# ✅ 正确: BBANDS 返回 DataFrame，用列名访问
+bollinger = ta.BBANDS(dataframe, timeperiod=20, nbdevup=2.0, nbdevdn=2.0)
+dataframe["bb_upper"] = bollinger["upperband"]
+dataframe["bb_middle"] = bollinger["middleband"]
+dataframe["bb_lower"] = bollinger["lowerband"]
+
+# ❌ 错误: 解包得到字符串列名，不是 Series！
+# bb_upper, bb_middle, bb_lower = ta.BBANDS(dataframe, ...)
+
+# ✅ 正确: MACD 也返回 DataFrame
+macd_df = ta.MACD(dataframe, fastperiod=12, slowperiod=26, signalperiod=9)
+dataframe["macd"] = macd_df["macd"]
+dataframe["macd_signal"] = macd_df["macdsignal"]
+dataframe["macd_hist"] = macd_df["macdhist"]
+
+# ❌ 错误: 解包得到字符串！
+# macd, macd_signal, macd_hist = ta.MACD(dataframe, ...)
+
+# ✅ 正确: STOCH 返回 DataFrame
+stoch = ta.STOCH(dataframe, fastk_period=5, slowk_period=3, slowd_period=3)
+dataframe["stoch_k"] = stoch["slowk"]
+dataframe["stoch_d"] = stoch["slowd"]
+
+# ✅ 正确: 单列指标直接赋值
+dataframe["rsi"] = ta.RSI(dataframe, timeperiod=14)
+dataframe["adx"] = ta.ADX(dataframe, timeperiod=14)
+dataframe["cci"] = ta.CCI(dataframe, timeperiod=20)
+dataframe["atr"] = ta.ATR(dataframe, timeperiod=14)
+dataframe["obv"] = ta.OBV(dataframe)
+dataframe["mom"] = ta.MOM(dataframe, timeperiod=10)
+dataframe["willr"] = ta.WILLR(dataframe, timeperiod=14)
+dataframe["mfi"] = ta.MFI(dataframe, timeperiod=14)
+
+# ✅ 正确: EMA/SMA/DEMA 等均线
+dataframe["ema_fast"] = ta.EMA(dataframe, timeperiod=9)
+dataframe["ema_slow"] = ta.EMA(dataframe, timeperiod=21)
+dataframe["sma_50"] = ta.SMA(dataframe, timeperiod=50)
+dataframe["dema"] = ta.DEMA(dataframe, timeperiod=21)
+
+# ✅ 正确: 布尔信号列
+dataframe["atr_ma"] = dataframe["atr"].rolling(window=50).mean()
+dataframe["atr_expansion"] = dataframe["atr"] > dataframe["atr_ma"] * 1.2
+```
+
+**关键规则**: `ta.BBANDS()`, `ta.MACD()`, `ta.STOCH()`, `ta.STOCHRSI()` 返回的是 DataFrame（多列），**绝对不能用元组解包**。
+
 ## 必须确保
 1. **populate_entry_trend 必须产生交易信号**（0笔交易 = 失败）
 2. 入场因子之间不能逻辑矛盾
 3. 修改后代码必须是有效 Python（语法正确）
-4. 保留 WeeklyBudgetController, confirm_trade_entry, confirm_trade_exit, custom_stake_amount
-5. 所有 indicator 计算必须在 populate_indicators 中完成
+4. **talib 多列指标用 DataFrame 列名访问（见上方示例），禁止元组解包**
+5. 保留 WeeklyBudgetController, confirm_trade_entry, confirm_trade_exit, custom_stake_amount
+6. 所有 indicator 计算必须在 populate_indicators 中完成
 
 ## 每轮输出格式（严格 JSON）
 
