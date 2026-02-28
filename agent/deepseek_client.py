@@ -346,11 +346,35 @@ class DeepSeekClient:
                 import re as _re
                 for name in _re.findall(r"[A-Z_]{2,}(?:_CROSS|_BREAKOUT)?", cm):
                     tried_names.add(name)
+
+            # Map factor names to families for hard constraint tracking
+            from agent.factor_templates import FactorTemplateLibrary
+            _lib = FactorTemplateLibrary()
+            _all_factors = {f["name"]: f["family"] for f in _lib.get_all()}
+            _all_families = sorted(set(f["family"] for f in _lib.get_all()))
+            tried_families = set()
+            for name in tried_names:
+                if name in _all_factors:
+                    tried_families.add(_all_factors[name])
+            remaining_families = sorted(set(_all_families) - tried_families)
+
+            tried_section_parts = []
             if tried_names:
-                tried_factors_section = (
-                    f"\n## 已尝试过的因子（避免重复）\n"
-                    f"{', '.join(sorted(tried_names))}\n"
+                tried_section_parts.append(
+                    f"## 已尝试过的因子（避免重复）\n"
+                    f"{', '.join(sorted(tried_names))}"
                 )
+            tried_section_parts.append(
+                f"\n## 已覆盖的因子家族\n"
+                f"已覆盖: {', '.join(sorted(tried_families)) if tried_families else '无'}\n"
+                f"**未覆盖: {', '.join(remaining_families) if remaining_families else '全部已覆盖'}**"
+            )
+            tried_section_parts.append(
+                f"\n## ⚠️ 硬约束提醒\n"
+                f"本轮你 **必须** 从未覆盖家族（{', '.join(remaining_families) if remaining_families else '任选'}）中选至少 1 个因子。"
+                f"\n如果所有家族已覆盖，则从得分最低轮次的家族中选一个未试过的因子。"
+            )
+            tried_factors_section = "\n".join(tried_section_parts)
 
         return f"""
 ## 当前迭代轮次: {iteration_round}
@@ -377,7 +401,8 @@ class DeepSeekClient:
 
 ### 第二步：从因子目录中选 2-4 个因子
 - 选逻辑一致的因子（趋势确认+动量确认，或均值回归+超买超卖）
-- 每轮至少换 1 个新因子（参考"已尝试因子"列表）
+- ⚠️ **硬约束：必须引入至少 1 个来自新家族的因子**（参考上方「未覆盖家族」列表）
+- 参考"已尝试因子"列表，避免完全重复
 - 用 AND 组合条件，但不超过 3 个核心条件
 
 ### 第三步：实施修改
