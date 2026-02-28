@@ -10,8 +10,8 @@ OP 策略核心：周内滚仓复利模型
 
 示例路径：100→250→600→1100（达标）
 
-指标体系：ADX + Bollinger Bands + ATR
-入场：趋势确认 + 波动率突破
+指标体系：ADX + Bollinger Bands + ATR + RSI
+入场：趋势确认 + 波动率突破 + 动量过滤
 出场：硬止损 + ROI 梯度止盈 + 移动止盈
 """
 
@@ -130,9 +130,16 @@ class LotteryMindsetStrategy(IStrategy):
       - 亏完即停，等下周
 
     入场条件（全部满足）：
-      1. ADX > 25 （趋势存在）
-      2. 价格突破 Bollinger Band 上轨（做多）或下轨（做空）
-      3. ATR > 最小阈值（波动率足够）
+      做多：
+        1. ADX > 20 （趋势存在，放宽阈值）
+        2. close > BB 上轨（突破）
+        3. ATR > ATR_MA * 0.8 （波动率足够，放宽阈值）
+        4. RSI < 30 （超卖区域，增加胜率）
+      做空：
+        1. ADX > 20
+        2. close < BB 下轨
+        3. ATR > ATR_MA * 0.8
+        4. RSI > 70 （超买区域，增加胜率）
 
     出场条件：
       1. 硬止损（ALL IN 下保护本金）
@@ -178,11 +185,14 @@ class LotteryMindsetStrategy(IStrategy):
     leverage_value = 5
 
     # ---- 可优化参数 ----
-    adx_threshold = IntParameter(15, 40, default=25, space="buy", optimize=True)
+    adx_threshold = IntParameter(15, 40, default=20, space="buy", optimize=True)  # 从25调整到20
     bb_period = IntParameter(10, 30, default=20, space="buy", optimize=True)
     bb_std = DecimalParameter(1.5, 3.0, default=2.0, decimals=1, space="buy", optimize=True)
     atr_period = IntParameter(7, 21, default=14, space="buy", optimize=True)
-    atr_min_multiplier = DecimalParameter(0.5, 2.0, default=1.0, decimals=1, space="buy", optimize=True)
+    atr_min_multiplier = DecimalParameter(0.5, 2.0, default=0.8, decimals=1, space="buy", optimize=True)  # 从1.0调整到0.8
+    rsi_period = IntParameter(7, 21, default=14, space="buy", optimize=True)
+    rsi_overbought = IntParameter(60, 80, default=70, space="buy", optimize=True)
+    rsi_oversold = IntParameter(20, 40, default=30, space="buy", optimize=True)
 
     # ---- 仅在新蜡烛时处理 ----
     process_only_new_candles = True
@@ -251,7 +261,7 @@ class LotteryMindsetStrategy(IStrategy):
     # ---- 指标计算 ----
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         """
-        计算 ADX + Bollinger Bands + ATR 指标体系
+        计算 ADX + Bollinger Bands + ATR + RSI 指标体系
         """
         # ADX - 趋势强度
         dataframe["adx"] = ta.ADX(dataframe, timeperiod=14)
@@ -275,6 +285,9 @@ class LotteryMindsetStrategy(IStrategy):
         # ATR 移动平均作为基准阈值
         dataframe["atr_ma"] = dataframe["atr"].rolling(window=50).mean()
 
+        # RSI - 动量指标
+        dataframe["rsi"] = ta.RSI(dataframe, timeperiod=int(self.rsi_period.value))
+
         # 辅助：收盘价相对 BB 位置
         dataframe["bb_width"] = (
             (dataframe["bb_upper"] - dataframe["bb_lower"]) / dataframe["bb_middle"]
@@ -290,30 +303,34 @@ class LotteryMindsetStrategy(IStrategy):
           1. ADX > threshold
           2. close > BB 上轨
           3. ATR > ATR_MA * multiplier
+          4. RSI < oversold_threshold
         做空：
           1. ADX > threshold
           2. close < BB 下轨
           3. ATR > ATR_MA * multiplier
+          4. RSI > overbought_threshold
         """
         # ---- 做多条件 ----
         long_conditions = (
             (dataframe["adx"] > int(self.adx_threshold.value))
             & (dataframe["close"] > dataframe["bb_upper"])
             & (dataframe["atr"] > dataframe["atr_ma"] * float(self.atr_min_multiplier.value))
+            & (dataframe["rsi"] < int(self.rsi_oversold.value))
             & (dataframe["volume"] > 0)
         )
         dataframe.loc[long_conditions, "enter_long"] = 1
-        dataframe.loc[long_conditions, "enter_tag"] = "bb_breakout_long"
+        dataframe.loc[long_conditions, "enter_tag"] = "bb_breakout_long_rsi"
 
         # ---- 做空条件 ----
         short_conditions = (
             (dataframe["adx"] > int(self.adx_threshold.value))
             & (dataframe["close"] < dataframe["bb_lower"])
             & (dataframe["atr"] > dataframe["atr_ma"] * float(self.atr_min_multiplier.value))
+            & (dataframe["rsi"] > int(self.rsi_overbought.value))
             & (dataframe["volume"] > 0)
         )
         dataframe.loc[short_conditions, "enter_short"] = 1
-        dataframe.loc[short_conditions, "enter_tag"] = "bb_breakout_short"
+        dataframe.loc[short_conditions, "enter_tag"] = "bb_breakout_short_rsi"
 
         return dataframe
 

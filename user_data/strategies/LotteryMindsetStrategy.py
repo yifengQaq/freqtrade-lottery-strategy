@@ -1,20 +1,3 @@
-"""
-彩票心态合约策略 - LotteryMindsetStrategy
-===========================================
-OP 策略核心：周内滚仓复利模型
-
-每周预算 100 USDT，目标 1000 USDT（1:10 盈亏比）
-单笔 ALL IN 当前全部余额，不分仓
-盈利后：本金+利润 → 继续 ALL IN → 滚到 ≥1000 提现停机
-亏完 → 本周停机，等下周
-
-示例路径：100→250→600→1100（达标）
-
-指标体系：ADX + Bollinger Bands + ATR
-入场：趋势确认 + 波动率突破
-出场：硬止损 + ROI 梯度止盈 + 移动止盈
-"""
-
 import datetime
 import logging
 from typing import Optional
@@ -130,12 +113,13 @@ class LotteryMindsetStrategy(IStrategy):
       - 亏完即停，等下周
 
     入场条件（全部满足）：
-      1. ADX > 25 （趋势存在）
+      1. ADX > 18 （趋势存在）
       2. 价格突破 Bollinger Band 上轨（做多）或下轨（做空）
-      3. ATR > 最小阈值（波动率足够）
+      3. ATR > ATR_MA * 0.7（波动率足够）
+      4. RSI > 50 做多，RSI < 50 做空（动量确认）
 
     出场条件：
-      1. 硬止损（ALL IN 下保护本金）
+      1. 硬止损 -40%（保护本金）
       2. ROI 梯度止盈（锁利用于下一笔滚仓）
       3. 移动止盈（让利润跑起来）
     """
@@ -147,19 +131,14 @@ class LotteryMindsetStrategy(IStrategy):
     timeframe = "15m"
 
     # ---- 止损 ----
-    # ALL IN 模式下止损不能太宽，-50% 就半仓没了
-    # 但也不能太窄（高波动币容易扫），-30%~-50% 合理
-    stoploss = -0.50
+    stoploss = -0.40
 
     # ---- ROI 梯度止盈 ----
-    # 滚仓不需要单笔 1000%，每笔赚 30%~150% 然后再开
-    # 100→150→225→337→506→759→1139（6笔各+50%）
-    # 100→250→625→1562（3笔各+150%）
     minimal_roi = {
-        "0": 1.5,      # 即刻 +150% 止盈
-        "60": 1.0,      # 1小时后 +100%
-        "240": 0.5,     # 4小时后 +50%
-        "720": 0.3,     # 12小时后 +30%
+        "0": 1.2,      # 即刻 +120% 止盈
+        "30": 0.8,     # 30分钟后 +80%
+        "120": 0.5,    # 2小时后 +50%
+        "360": 0.3,    # 6小时后 +30%
     }
 
     # ---- 移动止盈 ----
@@ -178,11 +157,11 @@ class LotteryMindsetStrategy(IStrategy):
     leverage_value = 5
 
     # ---- 可优化参数 ----
-    adx_threshold = IntParameter(15, 40, default=25, space="buy", optimize=True)
+    adx_threshold = IntParameter(15, 40, default=18, space="buy", optimize=True)
     bb_period = IntParameter(10, 30, default=20, space="buy", optimize=True)
     bb_std = DecimalParameter(1.5, 3.0, default=2.0, decimals=1, space="buy", optimize=True)
     atr_period = IntParameter(7, 21, default=14, space="buy", optimize=True)
-    atr_min_multiplier = DecimalParameter(0.5, 2.0, default=1.0, decimals=1, space="buy", optimize=True)
+    atr_min_multiplier = DecimalParameter(0.5, 2.0, default=0.7, decimals=1, space="buy", optimize=True)
 
     # ---- 仅在新蜡烛时处理 ----
     process_only_new_candles = True
@@ -251,7 +230,7 @@ class LotteryMindsetStrategy(IStrategy):
     # ---- 指标计算 ----
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         """
-        计算 ADX + Bollinger Bands + ATR 指标体系
+        计算 ADX + Bollinger Bands + ATR + RSI 指标体系
         """
         # ADX - 趋势强度
         dataframe["adx"] = ta.ADX(dataframe, timeperiod=14)
@@ -275,6 +254,9 @@ class LotteryMindsetStrategy(IStrategy):
         # ATR 移动平均作为基准阈值
         dataframe["atr_ma"] = dataframe["atr"].rolling(window=50).mean()
 
+        # RSI - 动量指标
+        dataframe["rsi"] = ta.RSI(dataframe, timeperiod=14)
+
         # 辅助：收盘价相对 BB 位置
         dataframe["bb_width"] = (
             (dataframe["bb_upper"] - dataframe["bb_lower"]) / dataframe["bb_middle"]
@@ -290,16 +272,19 @@ class LotteryMindsetStrategy(IStrategy):
           1. ADX > threshold
           2. close > BB 上轨
           3. ATR > ATR_MA * multiplier
+          4. RSI > 50
         做空：
           1. ADX > threshold
           2. close < BB 下轨
           3. ATR > ATR_MA * multiplier
+          4. RSI < 50
         """
         # ---- 做多条件 ----
         long_conditions = (
             (dataframe["adx"] > int(self.adx_threshold.value))
             & (dataframe["close"] > dataframe["bb_upper"])
             & (dataframe["atr"] > dataframe["atr_ma"] * float(self.atr_min_multiplier.value))
+            & (dataframe["rsi"] > 50)
             & (dataframe["volume"] > 0)
         )
         dataframe.loc[long_conditions, "enter_long"] = 1
@@ -310,6 +295,7 @@ class LotteryMindsetStrategy(IStrategy):
             (dataframe["adx"] > int(self.adx_threshold.value))
             & (dataframe["close"] < dataframe["bb_lower"])
             & (dataframe["atr"] > dataframe["atr_ma"] * float(self.atr_min_multiplier.value))
+            & (dataframe["rsi"] < 50)
             & (dataframe["volume"] > 0)
         )
         dataframe.loc[short_conditions, "enter_short"] = 1

@@ -30,10 +30,10 @@ class DeepSeekClient:
         api_key: Optional[str] = None,
         model: str = DEFAULT_MODEL,
         base_url: str = DEEPSEEK_API_BASE,
-        max_tokens: int = 4096,
+        max_tokens: int = 8192,
         temperature: float = 0.3,
         max_retries: int = 3,
-        timeout: float = 120.0,
+        timeout: float = 300.0,
     ):
         self.api_key = api_key or os.environ.get("DEEPSEEK_API_KEY", "")
         if not self.api_key:
@@ -357,7 +357,12 @@ class DeepSeekClient:
 3. 提出 1-2 个具体的参数/逻辑修改
 4. 输出完整的修改后策略代码
 
-请以 JSON 格式返回:
+⚠️ 关键约束:
+- timeframe 只能是 "15m" 或 "1h"，严禁改为其他值
+- stake_amount 必须保持 "unlimited"
+- code_patch 必须是完整可运行的 .py 文件
+
+请直接返回纯 JSON（不要 markdown fence），格式:
 {{
     "round": {iteration_round},
     "changes_made": "简述修改内容",
@@ -372,15 +377,58 @@ class DeepSeekClient:
     def _extract_json_from_text(text: str) -> dict:
         """Try to extract JSON from text that may contain markdown fences."""
         import re
-        # Try ```json ... ``` blocks
+
+        # 1. Try ```json ... ``` blocks
         match = re.search(r"```(?:json)?\s*\n?(.*?)\n?```", text, re.DOTALL)
         if match:
-            return json.loads(match.group(1))
-        # Try raw { ... }
+            try:
+                return json.loads(match.group(1))
+            except json.JSONDecodeError:
+                pass
+
+        # 2. Find outermost balanced { ... } using bracket counting
+        start = text.find("{")
+        if start != -1:
+            depth = 0
+            in_string = False
+            escape = False
+            for i in range(start, len(text)):
+                c = text[i]
+                if escape:
+                    escape = False
+                    continue
+                if c == "\\":
+                    escape = True
+                    continue
+                if c == '"' and not escape:
+                    in_string = not in_string
+                    continue
+                if in_string:
+                    continue
+                if c == "{":
+                    depth += 1
+                elif c == "}":
+                    depth -= 1
+                    if depth == 0:
+                        candidate = text[start : i + 1]
+                        try:
+                            return json.loads(candidate)
+                        except json.JSONDecodeError:
+                            pass
+                        break
+
+        # 3. Greedy fallback (original approach)
         match = re.search(r"\{.*\}", text, re.DOTALL)
         if match:
-            return json.loads(match.group(0))
-        raise ValueError("Cannot extract JSON from LLM response")
+            try:
+                return json.loads(match.group(0))
+            except json.JSONDecodeError:
+                pass
+
+        raise ValueError(
+            f"Cannot extract JSON from LLM response "
+            f"(length={len(text)}, first 200 chars: {text[:200]!r})"
+        )
 
     def close(self):
         self._client.close()

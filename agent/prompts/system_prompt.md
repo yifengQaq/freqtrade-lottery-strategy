@@ -31,7 +31,7 @@
 - stake_amount = "unlimited"（必须保持全仓 ALL IN）
 - WeeklyBudgetController 核心逻辑
 - max_open_trades = 1
-- timeframe 只能用 15m 或 1h（数据只有这两个周期）
+- **timeframe 只能用 "15m" 或 "1h"（数据只有这两个周期，改成 5m/4h 等会直接报错 No data found）**
 - can_short = True（必须保留做空能力）
 - 不要添加没有 import 的库（只用 talib, numpy, pandas）
 - custom_stake_amount 方法（滚仓核心）
@@ -50,15 +50,20 @@
 4. 保留 custom_stake_amount（滚仓核心）
 
 ## 每轮输出格式（严格 JSON）
+
+**重要：你的回复必须是纯 JSON，不要包含任何 markdown fence、解释文字或额外内容。**
+
 ```json
 {
   "round": 5,
   "changes_made": "将 ADX 阈值从 25 调整到 20，增加 RSI 超卖过滤",
   "rationale": "上轮胜率40%但盈亏比不足，放宽入场增加机会",
-  "code_patch": "... 完整的代码修改 ...",
+  "code_patch": "... 完整的修改后策略代码（Python）...",
   "expected_impact": "预期交易频率提升30%，胜率可能降低5%但总盈利提升"
 }
 ```
+
+**code_patch 必须是完整的 .py 文件内容，可直接保存运行。不要省略任何部分。**
 
 ## 终止条件
 - 连续 3 轮无提升 → 停止

@@ -239,17 +239,27 @@ class StrategyModifier:
                     f"Stoploss {sl} is wider than minimum {MIN_STOPLOSS}"
                 )
 
-        # Check for compound/reinvest patterns (forbidden in OP strategy)
-        compound_patterns = [
-            r"compound",
-            r"reinvest",
-            r"stake_amount\s*=\s*.*balance",
-        ]
-        for p in compound_patterns:
-            if re.search(p, code, re.IGNORECASE):
-                warnings.append(
-                    f"Possible compounding pattern detected: {p} — "
-                    "OP strategy is non-compounding"
+        # Timeframe check: only 15m or 1h allowed (data constraint)
+        tf_matches = re.findall(
+            r"timeframe\s*=\s*[\"']([^\"']+)[\"']", code
+        )
+        allowed_tf = {"15m", "1h"}
+        for tf in tf_matches:
+            if tf not in allowed_tf:
+                errors.append(
+                    f"Timeframe '{tf}' is not allowed. "
+                    f"Only {allowed_tf} have historical data."
+                )
+
+        # stake_amount must remain "unlimited" (rolling compounding model)
+        sa_matches = re.findall(
+            r"stake_amount\s*=\s*[\"']([^\"']+)[\"']", code
+        )
+        for sa in sa_matches:
+            if sa != "unlimited":
+                errors.append(
+                    f"stake_amount='{sa}' is not allowed. "
+                    "Must be 'unlimited' for rolling compounding."
                 )
 
         return errors, warnings
