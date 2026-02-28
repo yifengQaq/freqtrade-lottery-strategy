@@ -10,11 +10,26 @@ agent:
   strategy_dir: "strategies"
   backup_dir: "results/strategy_versions"
   config_path: "config/config_backtest.json"
-  timerange_is: "20250901-20251130"
-  timerange_oos: "20251201-20251231"
+
+  # 多窗口回测 — 覆盖牛/熊/横/恢复/近期
+  timerange_is: "20210101-20251231"      # 全量（快速验证用）
+  timerange_oos: "20250701-20251231"     # OOS 半年
   enable_walk_forward: true
+  enable_multi_backtest: true
+
+  comparison_windows:
+    bull_2021: "20210101-20210501"        # 牛市 BTC 30k→60k
+    bear_2022: "20220501-20221001"        # 熊市 BTC 40k→20k
+    sideways_2023: "20230601-20231001"    # 横盘 BTC 25k~30k
+    recovery_2024: "20240101-20240601"    # 恢复 BTC 40k→70k
+    recent_2025: "20250101-20250601"      # 最近半年
+
+  # 自动修复
   auto_repair: true
   repair_max_retries: 3
-  enable_factor_lab: false
+
+  # 因子实验
+  enable_factor_lab: true
   factor_candidates: 5
+
   results_dir: "results"
