@@ -1,0 +1,45 @@
+# ==========================================
+# 回测执行规范（贴近 OP 真实交易）
+# ==========================================
+
+data:
+  timeframe: "5m"                 # 主时间框架（可迭代：1m/5m/15m）
+  informative_timeframes:
+    - "1h"
+    - "4h"
+  download_period: "2023-01-01 to 2025-12-31"  # 至少覆盖牛熊震荡
+  pairs_source: "VolumePairList top 30"
+
+  # 数据质量检查
+  quality_checks:
+    max_missing_candle_pct: 1.0   # 缺失 K 线 < 1%
+    remove_pairs_with_gaps: true
+
+cost_model:
+  # 必须贴近真实
+  fee_maker: 0.0002              # 0.02%
+  fee_taker: 0.0004              # 0.04%
+  slippage_pct: 0.05             # 0.05% 固定滑点
+  funding_rate: true             # 合约资金费率计入
+
+  # 敏感性测试：费用上调 50% 后仍为正
+  sensitivity_test:
+    fee_multiplier: 1.5
+    must_still_positive: true
+
+execution:
+  # 两轮回测
+  round_1_fixed_stake:
+    stake_amount: 100
+    purpose: "验证信号质量"
+
+  round_2_weekly_cycle:
+    stake_amount: 100
+    weekly_reset: true
+    purpose: "验证完整周期策略"
+
+  # 结果有效性
+  validity:
+    min_total_trades: 50
+    stake_limit_hit_pct: "< 0.5%"
+    min_weeks_covered: 26         # 至少半年

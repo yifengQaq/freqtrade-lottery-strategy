@@ -1,0 +1,51 @@
+{
+    "stake_currency": "USDT",
+    "stake_amount": 100,
+    "dry_run": true,
+    "trading_mode": "futures",
+    "margin_mode": "isolated",
+
+    "max_open_trades": 1,
+
+    "minimal_roi": {
+        "0": 10.0,
+        "1440": 5.0,
+        "4320": 2.0
+    },
+
+    "stoploss": -0.95,
+
+    "trailing_stop": true,
+    "trailing_stop_positive": 0.5,
+    "trailing_stop_positive_offset": 2.0,
+    "trailing_only_offset_is_reached": true,
+
+    "exchange": {
+        "name": "binance",
+        "pair_whitelist": [],
+        "pair_blacklist": [".*_BUSD"]
+    },
+
+    "pairlists": [
+        {
+            "method": "VolumePairList",
+            "number_assets": 30,
+            "sort_key": "quoteVolume",
+            "min_value": 5000000
+        },
+        {
+            "method": "AgeFilter",
+            "min_days_listed": 30
+        },
+        {
+            "method": "SpreadFilter",
+            "max_spread_ratio": 0.005
+        },
+        {
+            "method": "VolatilityFilter",
+            "min_volatility": 0.03,
+            "max_volatility": 0.50,
+            "lookback_days": 10
+        }
+    ]
+}

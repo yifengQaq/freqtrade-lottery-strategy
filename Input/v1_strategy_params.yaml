@@ -1,0 +1,37 @@
+# ==========================================
+# OP 策略参数框架（Freqtrade 适配）
+# ==========================================
+
+# --- 资金管理 ---
+capital:
+  weekly_budget: 100          # 每周固定投入（USDT）
+  target_profit: 1000         # 每周目标利润（USDT）
+  max_weekly_loss: 100        # 每周最大亏损 = weekly_budget
+  profit_action: "withdraw"   # 达标后：提现，不复利
+  loss_action: "stop"         # 亏完后：本周停机
+
+# --- 仓位管理 ---
+position:
+  mode: "all_in"              # 单笔 ALL IN（预算即仓位）
+  leverage: "low"             # OP 明确说"总体杠杆率不高"
+  leverage_range: [3, 10]     # 推测合理范围（需回测确认）
+  max_open_trades: 1          # 一次只持一笔（ALL IN 逻辑）
+
+# --- 盈亏比 ---
+risk_reward:
+  target_rr_ratio: 10         # 1:10（100 刀博 1000 刀）
+  acceptable_win_rate: 0.10   # 10% 胜率即可回本
+  breakeven_win_rate: 0.091   # 数学盈亏平衡点：1/(1+10)
+
+# --- 时间框架 ---
+cycle:
+  unit: "week"                # 以周为周期
+  review: "monthly"           # 每月复盘
+  max_monthly_loss: 400       # OP 实际数据：月最多亏 400
+  max_monthly_gain: 4000      # OP 实际数据：月最多赚 4000
+
+# --- 运行环境 ---
+runtime:
+  mode: "vps_24x7"            # 持续运行，等待信号
+  exchange: "futures"         # 合约交易
+  pairs: "dynamic"            # 筛选高波动+足够流动性的币对
