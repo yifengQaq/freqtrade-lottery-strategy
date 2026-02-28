@@ -335,6 +335,23 @@ class DeepSeekClient:
                     f"Score: {c.get('score', 'N/A')}\n"
                 )
 
+        # Build tried-factors section from history
+        tried_factors_section = ""
+        if previous_changes:
+            tried_names = set()
+            for c in previous_changes:
+                # Extract factors_used if present in changes_made
+                cm = c.get("changes_made", "")
+                # Also look for explicit factor names in brackets
+                import re as _re
+                for name in _re.findall(r"[A-Z_]{2,}(?:_CROSS|_BREAKOUT)?", cm):
+                    tried_names.add(name)
+            if tried_names:
+                tried_factors_section = (
+                    f"\n## 已尝试过的因子（避免重复）\n"
+                    f"{', '.join(sorted(tried_names))}\n"
+                )
+
         return f"""
 ## 当前迭代轮次: {iteration_round}
 
@@ -350,20 +367,23 @@ class DeepSeekClient:
 
 ## 历史变更摘要
 {changes_summary if changes_summary else "这是第一轮迭代，无历史记录。"}
-
+{tried_factors_section}
 ## 你的任务（按顺序执行）
-### 第一步：逻辑诊断
-- 检查入场条件的指标组合是否逻辑矛盾（如 close > BB_upper 同时 RSI < 30）
-- 如有矛盾，本轮优先修复逻辑，不要只调参数
-- 如果上轮 0 笔交易，几乎肯定是逻辑/条件过严问题
 
-### 第二步：选择修改维度
-参考历史变更摘要，不要连续 2 轮修改同一类参数。
-优先级：逻辑矛盾修复 > 入场重构 > 出场调优 > 杠杆/参数微调
+### 第一步：需求诊断
+- 如果上轮 **0 笔交易**：入场条件有逻辑矛盾或条件过严，必须重构入场逻辑
+- 如果上轮有交易但 **胜率/盈亏比差**：调整出场参数或换更适合当前市况的因子组合
+- 如果上轮表现尚可：微调参数或尝试新因子组合看能否进一步提升
 
-### 第三步：实施 1-2 个具体修改
-- 每次最多修改 2 个维度
-- 在 changes_made 中标注修改维度（如"[入场逻辑]""[出场参数]"）
+### 第二步：从因子目录中选 2-4 个因子
+- 选逻辑一致的因子（趋势确认+动量确认，或均值回归+超买超卖）
+- 每轮至少换 1 个新因子（参考"已尝试因子"列表）
+- 用 AND 组合条件，但不超过 3 个核心条件
+
+### 第三步：实施修改
+- 在 populate_indicators 中计算所选因子指标
+- 在 populate_entry_trend 中构建入场条件
+- 根据需要调整 stoploss/ROI/trailing/leverage
 
 ⚠️ 关键约束:
 - timeframe 只能是 "15m" 或 "1h"，严禁改为其他值
@@ -373,8 +393,9 @@ class DeepSeekClient:
 请直接返回纯 JSON（不要 markdown fence），格式:
 {{
     "round": {iteration_round},
-    "changes_made": "[维度] 简述修改内容",
-    "rationale": "修改理由（基于数据和逻辑诊断）",
+    "factors_used": ["因子名1", "因子名2"],
+    "changes_made": "[入场重构] 简述修改内容",
+    "rationale": "修改理由（基于数据和因子选择逻辑）",
     "code_patch": "完整的修改后策略代码（Python）",
     "config_patch": {{}},
     "next_action": "下一步计划"

@@ -26,6 +26,7 @@ from agent.deepseek_client import DeepSeekClient
 from agent.error_recovery import ErrorRecoveryManager
 from agent.evaluator import Evaluator, EvalResult
 from agent.factor_lab import FactorLab
+from agent.factor_templates import FactorTemplateLibrary
 from agent.strategy_modifier import StrategyModifier
 from agent.target_optimizer import TargetOptimizer
 from agent.weekly_settlement import WeeklySettlementManager
@@ -500,5 +501,14 @@ class Orchestrator:
         prompt_path = os.path.join("agent", "prompts", "system_prompt.md")
         if os.path.exists(prompt_path):
             with open(prompt_path) as f:
-                return f.read()
-        return "You are a Freqtrade strategy optimisation agent."
+                template = f.read()
+        else:
+            template = "You are a Freqtrade strategy optimisation agent."
+
+        # Inject factor catalog into the prompt
+        if "{FACTOR_CATALOG}" in template:
+            lib = FactorTemplateLibrary()
+            catalog_text = lib.get_catalog_text()
+            template = template.replace("{FACTOR_CATALOG}", catalog_text)
+
+        return template
