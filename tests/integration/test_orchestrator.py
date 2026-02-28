@@ -370,3 +370,119 @@ class TestBacktestFailureRecovery:
         assert rounds[0]["status"] == "failed"
         assert rounds[1]["status"] == "success"
         assert rounds[2]["status"] == "success"
+
+
+# ===================================================================
+# T040-6: test_auto_repair_on_backtest_failure
+# ===================================================================
+
+
+class TestAutoRepairOnBacktestFailure:
+    """注入回测失败 → 触发 error_recovery → 修复成功 → 继续"""
+
+    def test_auto_repair_on_backtest_failure(self, tmp_path):
+        config = _base_config(tmp_path)
+        config["max_rounds"] = 2
+        config["enable_auto_repair"] = True
+        config["repair_max_retries"] = 3
+        orch = _make_orchestrator(config)
+
+        # Wire up error_recovery
+        from agent.error_recovery import ErrorRecoveryManager
+
+        mock_er = MagicMock(spec=ErrorRecoveryManager)
+        orch.error_recovery = mock_er
+
+        call_count = {"n": 0}
+
+        def _bt_side(*args, **kwargs):
+            call_count["n"] += 1
+            if call_count["n"] == 1:
+                # First backtest fails
+                return {
+                    "success": False,
+                    "error": "SyntaxError: unexpected EOF",
+                    "metrics": {},
+                    "raw_results": {},
+                    "result_file": "",
+                }
+            m = dict(_good_metrics())
+            m["monthly_net_profit_avg"] = 50.0 + call_count["n"] * 20
+            return {
+                "success": True,
+                "error": "",
+                "metrics": m,
+                "raw_results": {},
+                "result_file": "",
+            }
+
+        orch.backtest_runner.run.side_effect = _bt_side
+
+        # Auto-repair succeeds on first call
+        repaired_metrics = dict(_good_metrics())
+        repaired_metrics["monthly_net_profit_avg"] = 60.0
+        mock_er.attempt_fix.return_value = {
+            "success": True,
+            "attempts": 1,
+            "error_type": "syntax",
+            "fix_summary": "Fixed syntax",
+            "metrics": repaired_metrics,
+        }
+
+        rounds = orch.run_iteration_loop(max_rounds=2)
+
+        # Round 1 should succeed (after auto-repair)
+        assert rounds[0]["status"] == "success"
+        assert "auto-repaired" in rounds[0]["changes_made"]
+        mock_er.attempt_fix.assert_called_once()
+
+
+# ===================================================================
+# T040-7: test_auto_repair_exhausted_rollback
+# ===================================================================
+
+
+class TestAutoRepairExhaustedRollback:
+    """修复耗尽 → 回滚 → 记录 rolled_back"""
+
+    def test_auto_repair_exhausted_rollback(self, tmp_path):
+        config = _base_config(tmp_path)
+        config["max_rounds"] = 2
+        config["enable_auto_repair"] = True
+        config["repair_max_retries"] = 3
+        orch = _make_orchestrator(config)
+
+        from agent.error_recovery import ErrorRecoveryManager
+
+        mock_er = MagicMock(spec=ErrorRecoveryManager)
+        orch.error_recovery = mock_er
+
+        # Backtest always fails
+        orch.backtest_runner.run.return_value = {
+            "success": False,
+            "error": "KeyError: 'close'",
+            "metrics": {},
+            "raw_results": {},
+            "result_file": "",
+        }
+
+        # Auto-repair exhausted
+        mock_er.attempt_fix.return_value = {
+            "success": False,
+            "attempts": 3,
+            "error_type": "runtime",
+            "fix_summary": "exhausted",
+            "metrics": {},
+        }
+        mock_er.rollback_on_exhausted.return_value = {
+            "rolled_back": True,
+            "rollback_round": 0,
+            "status": "quarantined",
+        }
+
+        rounds = orch.run_iteration_loop(max_rounds=2)
+
+        # Both rounds should be rolled_back
+        rolled_back = [r for r in rounds if r["status"] == "rolled_back"]
+        assert len(rolled_back) >= 1
+        mock_er.rollback_on_exhausted.assert_called()

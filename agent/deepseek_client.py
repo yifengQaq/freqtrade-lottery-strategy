@@ -88,6 +88,80 @@ class DeepSeekClient:
         messages.append({"role": "user", "content": user_message})
         return self._complete(messages, response_format)
 
+    def generate_fix_patch(
+        self,
+        system_prompt: str,
+        fix_prompt: str,
+    ) -> dict:
+        """
+        Ask the LLM to fix a broken strategy.
+
+        Returns:
+            {"code_patch": str, "fix_summary": str}
+        """
+        raw = self.chat(
+            system_prompt=system_prompt,
+            user_message=fix_prompt,
+            response_format={"type": "json_object"},
+        )
+
+        try:
+            result = json.loads(raw)
+        except json.JSONDecodeError:
+            result = self._extract_json_from_text(raw)
+
+        if "code_patch" not in result:
+            raise ValueError("LLM fix response missing 'code_patch'")
+
+        result.setdefault("fix_summary", "")
+        return result
+
+    def generate_factor_candidates(
+        self,
+        system_prompt: str,
+        current_code: str,
+        metrics: dict,
+        num_candidates: int = 5,
+    ) -> list[dict]:
+        """
+        Ask the LLM to propose candidate factors for experimentation.
+
+        Returns a list of candidate dicts.
+        """
+        user_msg = (
+            f"## Current Strategy Code\n```python\n{current_code}\n```\n\n"
+            f"## Current Metrics\n```json\n"
+            f"{json.dumps(metrics, indent=2, ensure_ascii=False)}\n```\n\n"
+            f"Generate exactly {num_candidates} candidate factor improvements.\n"
+            "Return a JSON array where each element has:\n"
+            '  "candidate_id", "factor_family" (volatility/trend/momentum/filter),\n'
+            '  "params" (dict), "description" (string).\n'
+        )
+
+        raw = self.chat(
+            system_prompt=system_prompt,
+            user_message=user_msg,
+            response_format={"type": "json_object"},
+        )
+
+        try:
+            parsed = json.loads(raw)
+        except json.JSONDecodeError:
+            parsed = self._extract_json_from_text(raw)
+
+        # The LLM may wrap the list in a key like "candidates"
+        if isinstance(parsed, dict):
+            for key in ("candidates", "factors", "results", "data"):
+                if key in parsed and isinstance(parsed[key], list):
+                    return parsed[key]
+            # Fallback: wrap single dict in a list
+            return [parsed]
+
+        if isinstance(parsed, list):
+            return parsed
+
+        raise ValueError("Cannot parse factor candidates from LLM response")
+
     def generate_strategy_patch(
         self,
         system_prompt: str,

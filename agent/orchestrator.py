@@ -21,7 +21,9 @@ from typing import Optional
 
 from agent.backtest_runner import BacktestRunner
 from agent.deepseek_client import DeepSeekClient
+from agent.error_recovery import ErrorRecoveryManager
 from agent.evaluator import Evaluator, EvalResult
+from agent.factor_lab import FactorLab
 from agent.strategy_modifier import StrategyModifier
 
 logger = logging.getLogger(__name__)
@@ -42,12 +44,37 @@ class Orchestrator:
         self.max_rounds: int = config.get("max_rounds", 20)
         self.stale_rounds_limit: int = config.get("stale_rounds_limit", 3)
         self.enable_walk_forward: bool = config.get("enable_walk_forward", False)
+        self.enable_auto_repair: bool = config.get("enable_auto_repair", False)
+        self.repair_max_retries: int = config.get("repair_max_retries", 3)
+        self.enable_factor_lab: bool = config.get("enable_factor_lab", False)
+        self.factor_candidates: int = config.get("factor_candidates", 5)
 
         # --- sub-components (can be overridden in tests) ---
         self.deepseek_client: DeepSeekClient = self._build_deepseek_client(config)
         self.backtest_runner: BacktestRunner = self._build_backtest_runner(config)
         self.evaluator: Evaluator = Evaluator()
         self.strategy_modifier: StrategyModifier = self._build_strategy_modifier(config)
+
+        # Error recovery manager (lazy — depends on other components)
+        self.error_recovery: ErrorRecoveryManager | None = None
+        if self.enable_auto_repair:
+            self.error_recovery = ErrorRecoveryManager(
+                deepseek_client=self.deepseek_client,
+                strategy_modifier=self.strategy_modifier,
+                backtest_runner=self.backtest_runner,
+                max_retries=self.repair_max_retries,
+            )
+
+        # Factor lab (lazy)
+        self.factor_lab: FactorLab | None = None
+        if self.enable_factor_lab:
+            self.factor_lab = FactorLab(
+                deepseek_client=self.deepseek_client,
+                experiment_log_path=os.path.join(
+                    config.get("results_dir", "results"),
+                    "experiments", "factor_trials.jsonl",
+                ),
+            )
 
         # System prompt for the LLM
         self.system_prompt: str = self._load_system_prompt()
@@ -222,10 +249,40 @@ class Orchestrator:
         timerange = self.config.get("timerange_is")
         bt_result = self.backtest_runner.run(timerange=timerange)
         if not bt_result["success"]:
-            base_record["next_action"] = (
-                f"Backtest failed: {bt_result['error']}"
-            )
-            return base_record
+            # --- Auto-repair path ---
+            if self.error_recovery is not None:
+                logger.info("Backtest failed — attempting auto-repair")
+                fix = self.error_recovery.attempt_fix(
+                    error_log=bt_result.get("error", ""),
+                    current_code=new_code,
+                    round_num=round_num,
+                    timerange=timerange,
+                )
+                if fix["success"]:
+                    logger.info("Auto-repair succeeded (attempts=%d)", fix["attempts"])
+                    bt_result = {
+                        "success": True,
+                        "error": "",
+                        "metrics": fix["metrics"],
+                        "raw_results": {},
+                        "result_file": "",
+                    }
+                    base_record["changes_made"] += f" [auto-repaired: {fix['fix_summary']}]"
+                else:
+                    # Exhausted — rollback
+                    rb = self.error_recovery.rollback_on_exhausted(round_num)
+                    base_record["next_action"] = (
+                        f"Auto-repair exhausted ({fix['attempts']} attempts). "
+                        f"Rolled back: {rb['rolled_back']}"
+                    )
+                    base_record["status"] = "rolled_back"
+                    return base_record
+
+            if not bt_result["success"]:
+                base_record["next_action"] = (
+                    f"Backtest failed: {bt_result['error']}"
+                )
+                return base_record
 
         base_record["backtest_metrics"] = bt_result["metrics"]
 

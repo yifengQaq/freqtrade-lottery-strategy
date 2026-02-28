@@ -65,6 +65,14 @@ def cmd_run(args, config: dict):
     """Run the iteration loop."""
     if args.walk_forward:
         config["enable_walk_forward"] = True
+    if args.auto_repair:
+        config["enable_auto_repair"] = True
+    if args.repair_max_retries is not None:
+        config["repair_max_retries"] = args.repair_max_retries
+    if args.enable_factor_lab:
+        config["enable_factor_lab"] = True
+    if args.factor_candidates is not None:
+        config["factor_candidates"] = args.factor_candidates
 
     orch = Orchestrator(config)
 
@@ -171,6 +179,32 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         default=False,
         help="Print plan without executing",
+    )
+    parser.add_argument(
+        "--auto-repair",
+        action="store_true",
+        default=False,
+        help="Enable automatic error recovery on backtest failure",
+    )
+    parser.add_argument(
+        "--repair-max-retries",
+        type=int,
+        default=None,
+        metavar="N",
+        help="Maximum repair attempts per failure (default: 3)",
+    )
+    parser.add_argument(
+        "--enable-factor-lab",
+        action="store_true",
+        default=False,
+        help="Enable factor generation and experimentation",
+    )
+    parser.add_argument(
+        "--factor-candidates",
+        type=int,
+        default=None,
+        metavar="N",
+        help="Number of factor candidates to generate per round (default: 5)",
     )
     parser.add_argument(
         "--config",
