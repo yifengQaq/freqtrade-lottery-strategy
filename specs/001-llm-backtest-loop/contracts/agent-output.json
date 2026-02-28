@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AgentIterationOutput",
+  "description": "DeepSeek Agent 每轮迭代的输出 JSON 结构",
+  "type": "object",
+  "required": ["round", "changes_made", "rationale", "code_patch"],
+  "properties": {
+    "round": {
+      "type": "integer",
+      "description": "当前轮次编号",
+      "minimum": 1
+    },
+    "changes_made": {
+      "type": "string",
+      "description": "本轮修改的简要描述"
+    },
+    "rationale": {
+      "type": "string",
+      "description": "修改理由（基于回测数据分析）"
+    },
+    "code_patch": {
+      "type": "string",
+      "description": "修改后的完整策略 Python 代码"
+    },
+    "config_patch": {
+      "type": "object",
+      "description": "可选的配置修改（JSON merge patch）",
+      "default": {}
+    },
+    "next_action": {
+      "type": "string",
+      "description": "Agent 对下一轮的建议",
+      "default": "continue"
+    }
+  }
+}
