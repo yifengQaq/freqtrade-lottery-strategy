@@ -212,6 +212,29 @@
 
 ---
 
+## Phase 10: User Story 7 — 周结算与未达标周处理 (Priority: P1)
+
+**Goal**: 明确“未达标未亏完”周的处理规则，保证非复利周策略一致性
+
+**Independent Test**: 三态周结果（达标/亏完/未达标未亏完）都能稳定输出结算动作和下周策略
+
+### Tests for User Story 7
+
+- [ ] T056 [P] [US7] 编写单元测试 `tests/unit/test_weekly_settlement.py` — 覆盖三态判定与周末强制结算
+- [ ] T057 [P] [US7] 扩展集成测试 `tests/integration/test_orchestrator.py` — 覆盖连续未达标触发冷却
+
+### Implementation for User Story 7
+
+- [ ] T058 [US7] 实现 `agent/weekly_settlement.py`：
+    - 周状态机 `TARGET_HIT / BUDGET_EXHAUSTED / WEEK_END_SETTLED`
+    - 未达标未亏完时周末强制结算并下周 `reset_budget_100`
+    - 连续未达标净值恶化触发 `cooldown_dryrun`
+- [ ] T059 [US7] 更新 `agent/orchestrator.py` 接入周结算报告并将报告写入 `results/weekly/weekly_settlement_reports.jsonl`
+- [ ] T060 [US7] 更新 `scripts/run_agent.py` 增加周治理参数：`--week-settlement-policy`, `--cooldown-threshold-weeks`
+- [ ] T061 [US7] 运行 US7 测试并验证“跨周复利持仓发生率=0%”
+
+---
+
 ## Dependencies
 
 ```
@@ -231,6 +254,8 @@ Phase 8 (US5: 自动纠错+因子生成 — 依赖 US2/US3/US4)
     ↓
 Phase 9 (US6: 多回测+DryRun动态构建 — 依赖 US2/US3/US5)
     ↓
+Phase 10 (US7: 周结算与冷却治理 — 依赖 US2/US4)
+    ↓
 Phase 7 (Polish — 依赖所有 above)
 ```
 
@@ -246,13 +271,14 @@ Phase 7 (Polish — 依赖所有 above)
 2. **Full Loop = + Phase 4**: 自动化多轮循环
 3. **Resilience = + Phase 8**: 自动纠错 + 因子实验闭环
 4. **Adaptive Build = + Phase 9**: 多回测 + Dry Run 对比驱动动态构建
-5. **Production = + Phase 5 + 6 + 7 + 8 + 9**: 防过拟合 + 版本管理 + 自修复 + 动态构建 + 文档
+5. **Weekly Governance = + Phase 10**: 周结算三态 + 冷却机制，确保非复利执行一致性
+6. **Production = + Phase 5 + 6 + 7 + 8 + 9 + 10**: 防过拟合 + 版本管理 + 自修复 + 动态构建 + 周治理 + 文档
 
 ## Summary
 
 | Metric | Value |
 |--------|-------|
-| Total Tasks | 55 |
+| Total Tasks | 61 |
 | Phase 1 (Setup) | 5 |
 | Phase 2 (Foundation) | 6 |
 | Phase 3 (US1 MVP) | 9 |
@@ -261,6 +287,7 @@ Phase 7 (Polish — 依赖所有 above)
 | Phase 6 (US4 Versions) | 4 |
 | Phase 8 (US5 Recovery+Factors) | 9 |
 | Phase 9 (US6 Multi-BT+DryRun) | 9 |
+| Phase 10 (US7 WeeklySettlement) | 6 |
 | Phase 7 (Polish) | 5 |
-| Parallel Opportunities | 20 tasks |
+| Parallel Opportunities | 22 tasks |
 | MVP Scope | US1 (Phase 1-3, 20 tasks) |

@@ -154,6 +154,20 @@ Story 目标差距向量。
 | weighted_norm | float | 加权范数（越小越接近目标） |
 | mode | str | explore/fine_tune |
 
+### WeeklySettlementReport
+
+每周周期结束后的结算报告。
+
+| Field | Type | Description |
+|-------|------|-------------|
+| week_id | str | 年-周标识（如 2026-W09） |
+| status | str | TARGET_HIT / BUDGET_EXHAUSTED / WEEK_END_SETTLED |
+| weekly_pnl | float | 本周净收益 |
+| reached_target | bool | 是否达成 1000 目标 |
+| exhausted_budget | bool | 是否亏完 100 预算 |
+| action_next_week | str | reset_budget_100 / cooldown_dryrun |
+| cooldown_triggered | bool | 是否触发冷却 |
+
 ## Relationships
 
 ```
@@ -166,6 +180,7 @@ ErrorIncident ──1:N──▶ FixAttempt
 IterationRound ──1:N──▶ FactorCandidate
 IterationRound ──1:N──▶ ComparisonMatrix
 IterationRound ──1:1──▶ TargetGapVector
+IterationRound ──N:1──▶ WeeklySettlementReport
 ```
 
 ## State Transitions
@@ -192,3 +207,4 @@ IterationRound.status:
 - `results/experiments/factor_trials.jsonl`: FactorCandidate 及实验结果账本
 - `results/comparisons/comparison_matrix.json`: 多回测 + Dry Run 对比矩阵
 - `results/comparisons/target_gap_history.jsonl`: TargetGapVector 迭代历史
+- `results/weekly/weekly_settlement_reports.jsonl`: WeeklySettlementReport 历史

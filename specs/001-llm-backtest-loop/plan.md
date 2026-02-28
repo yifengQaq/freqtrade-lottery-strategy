@@ -5,7 +5,7 @@
 
 ## Summary
 
-构建一个"DeepSeek LLM Agent + Freqtrade Backtest"闭环系统，自动完成：策略代码分析 → 参数/逻辑修改 → 回测执行 → 结果评估 → 再迭代。系统包含 RD-Agent 风格的“失败驱动自修复”能力：当语法/运行时/配置错误出现时，自动分诊并触发纠错补丁，最多重试 3 次后回滚；并增加“因子候选实验工厂（Factor Lab）”。在此基础上新增“多回测 + Dry Run 对比优化层”：通过 ComparisonMatrix 与 TargetGapVector 驱动 LLM 动态调参，向 Story 目标逼近。
+构建一个"DeepSeek LLM Agent + Freqtrade Backtest"闭环系统，自动完成：策略代码分析 → 参数/逻辑修改 → 回测执行 → 结果评估 → 再迭代。系统包含 RD-Agent 风格的“失败驱动自修复”能力：当语法/运行时/配置错误出现时，自动分诊并触发纠错补丁，最多重试 3 次后回滚；并增加“因子候选实验工厂（Factor Lab）”。在此基础上新增“多回测 + Dry Run 对比优化层”：通过 ComparisonMatrix 与 TargetGapVector 驱动 LLM 动态调参，向 Story 目标逼近。周资金管理采用三态周结算（达标/亏完/周末结算），未达标未亏完时周末强制结算并下周重置预算。
 
 ## Technical Context
 
@@ -59,6 +59,7 @@ agent/                           # Agent 核心模块
 ├── factor_lab.py                # 候选因子生成与实验筛选
 ├── comparator.py                # 多回测与 Dry Run 对比引擎
 ├── target_optimizer.py          # Story 目标差距驱动的调参策略
+├── weekly_settlement.py         # 周结算状态机与冷却机制
 └── prompts/
     └── system_prompt.md         # Agent 系统提示词
 
@@ -88,6 +89,9 @@ results/comparisons/             # 多回测+Ddry Run 对比报告
 ├── comparison_matrix.json
 └── target_gap_history.jsonl
 
+results/weekly/                  # 周级结算与冷却报告
+└── weekly_settlement_reports.jsonl
+
 tests/                           # 测试
 ├── unit/
 │   ├── test_deepseek_client.py
@@ -105,8 +109,11 @@ tests/unit/
 ├── test_comparator.py
 └── test_target_optimizer.py
 
+tests/unit/
+└── test_weekly_settlement.py
+
 Input/                           # 原始参考资料（只读）
 └── ...
 ```
 
-**Structure Decision**: 采用单项目 flat 结构。`agent/` 为核心库，`scripts/` 为 CLI 入口，`strategies/` + `controllers/` 为 freqtrade 策略侧代码，`config/` 为配置，`tests/` 为测试。新增 `error_recovery.py`、`factor_lab.py`、`comparator.py`、`target_optimizer.py`，分别支撑自动纠错、因子实验、多实验对比与目标逼近调参。
+**Structure Decision**: 采用单项目 flat 结构。`agent/` 为核心库，`scripts/` 为 CLI 入口，`strategies/` + `controllers/` 为 freqtrade 策略侧代码，`config/` 为配置，`tests/` 为测试。新增 `error_recovery.py`、`factor_lab.py`、`comparator.py`、`target_optimizer.py`、`weekly_settlement.py`，分别支撑自动纠错、因子实验、多实验对比、目标逼近调参与周结算治理。
