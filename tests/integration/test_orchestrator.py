@@ -575,3 +575,114 @@ class TestMultiBacktestComparison:
         # LLM used targeted adjustment (not regular patch)
         orch.deepseek_client.generate_targeted_adjustment.assert_called_once()
         orch.deepseek_client.generate_strategy_patch.assert_not_called()
+
+
+# ===================================================================
+# T057-9: test_weekly_settlement_report
+# ===================================================================
+
+
+class TestWeeklySettlementReport:
+    """验证周结算报告写入 results/weekly/weekly_settlement_reports.jsonl."""
+
+    def test_weekly_settlement_report(self, tmp_path):
+        config = _base_config(tmp_path)
+        config["max_rounds"] = 1
+        config["week_settlement_policy"] = "force_settle"
+        config["weekly_budget"] = 100.0
+        config["weekly_target"] = 1000.0
+        orch = _make_orchestrator(config)
+
+        # Re-attach WeeklySettlementManager (constructor may not have built it
+        # because _make_orchestrator patches DeepSeekClient)
+        from agent.weekly_settlement import WeeklySettlementManager
+
+        report_path = os.path.join(str(tmp_path / "results"), "weekly",
+                                   "weekly_settlement_reports.jsonl")
+        orch.weekly_settlement = WeeklySettlementManager(
+            weekly_budget=100.0,
+            weekly_target=1000.0,
+            report_path=report_path,
+        )
+
+        rounds = orch.run_iteration_loop(max_rounds=1)
+
+        assert len(rounds) == 1
+        assert rounds[0]["status"] == "success"
+
+        # Settlement report file should exist
+        assert os.path.exists(report_path), f"Report not found at {report_path}"
+
+        with open(report_path) as f:
+            lines = [l.strip() for l in f if l.strip()]
+        assert len(lines) == 1
+
+        report = json.loads(lines[0])
+        assert "week_id" in report
+        assert "status" in report
+        assert report["status"] in {"TARGET_HIT", "BUDGET_EXHAUSTED", "WEEK_END_SETTLED"}
+        assert "weekly_pnl" in report
+        assert "action_next_week" in report
+        assert "cooldown_triggered" in report
+
+
+# ===================================================================
+# T057-10: test_consecutive_fail_cooldown
+# ===================================================================
+
+
+class TestConsecutiveFailCooldown:
+    """连续未达标触发冷却模式。"""
+
+    def test_consecutive_fail_cooldown(self, tmp_path):
+        config = _base_config(tmp_path)
+        config["max_rounds"] = 1
+        config["week_settlement_policy"] = "force_settle"
+        config["cooldown_threshold_weeks"] = 3
+        orch = _make_orchestrator(config)
+
+        from agent.weekly_settlement import WeeklySettlementManager
+
+        report_path = os.path.join(str(tmp_path / "results"), "weekly",
+                                   "weekly_settlement_reports.jsonl")
+        mgr = WeeklySettlementManager(
+            weekly_budget=100.0,
+            weekly_target=1000.0,
+            cooldown_threshold_weeks=3,
+            report_path=report_path,
+        )
+
+        # Pre-seed 2 losing weeks
+        mgr.settle_week("2026-W07", weekly_pnl=-30.0)
+        mgr.settle_week("2026-W08", weekly_pnl=-50.0)
+        orch.weekly_settlement = mgr
+
+        # Make backtest return a small negative net profit so overall pnl is negative
+        orch.backtest_runner.run.return_value = {
+            "success": True,
+            "error": "",
+            "metrics": {
+                "weekly_target_hit_rate": 0.0,
+                "max_drawdown_pct": 50.0,
+                "total_trades": 100,
+                "stake_limit_hit_count": 0,
+                "monthly_net_profit_avg": -20.0,
+                "max_monthly_loss": 100.0,
+                "avg_trade_duration_hours": 24.0,
+                "avg_profit_per_trade_pct": -0.5,
+            },
+            "raw_results": {},
+            "result_file": "",
+        }
+
+        rounds = orch.run_iteration_loop(max_rounds=1)
+
+        # Load the settlement report written to disk
+        assert os.path.exists(report_path)
+        with open(report_path) as f:
+            lines = [l.strip() for l in f if l.strip()]
+
+        # The last line is the one written by the orchestrator
+        last_report = json.loads(lines[-1])
+        assert last_report["cooldown_triggered"] is True
+        assert last_report["action_next_week"] == "cooldown_dryrun"

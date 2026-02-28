@@ -27,6 +27,7 @@ from agent.evaluator import Evaluator, EvalResult
 from agent.factor_lab import FactorLab
 from agent.strategy_modifier import StrategyModifier
 from agent.target_optimizer import TargetOptimizer
+from agent.weekly_settlement import WeeklySettlementManager
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,8 @@ class Orchestrator:
         self.comparison_windows: dict[str, str] = config.get("comparison_windows", {})
         self.dryrun_input: dict = config.get("dryrun_input", {})
         self.target_profile: dict | None = config.get("target_profile", None)
+        self.week_settlement_policy: str = config.get("week_settlement_policy", "force_settle")
+        self.cooldown_threshold_weeks: int = config.get("cooldown_threshold_weeks", 3)
 
         # --- sub-components (can be overridden in tests) ---
         self.deepseek_client: DeepSeekClient = self._build_deepseek_client(config)
@@ -99,6 +102,19 @@ class Orchestrator:
                 log_path=os.path.join(
                     config.get("results_dir", "results"),
                     "comparisons", "target_gap_history.jsonl",
+                ),
+            )
+
+        # Weekly settlement
+        self.weekly_settlement: WeeklySettlementManager | None = None
+        if self.week_settlement_policy == "force_settle":
+            self.weekly_settlement = WeeklySettlementManager(
+                weekly_budget=config.get("weekly_budget", 100.0),
+                weekly_target=config.get("weekly_target", 1000.0),
+                cooldown_threshold_weeks=self.cooldown_threshold_weeks,
+                report_path=os.path.join(
+                    config.get("results_dir", "results"),
+                    "weekly", "weekly_settlement_reports.jsonl",
                 ),
             )
 
@@ -158,6 +174,22 @@ class Orchestrator:
                 if rounds:
                     rounds[-1]["next_action"] = f"STOP: {reason}"
                 break
+
+        # Weekly settlement (if enabled and we have weekly_pnl data)
+        if self.weekly_settlement is not None:
+            total_pnl = sum(
+                r.get("backtest_metrics", {}).get("monthly_net_profit_avg", 0.0)
+                for r in rounds
+                if r["status"] == "success"
+            )
+            week_id = self._current_week_id()
+            settlement = self.weekly_settlement.settle_week(week_id, total_pnl)
+            self.weekly_settlement.save_report(settlement)
+            logger.info(
+                "Weekly settlement: week=%s status=%s pnl=%.2f action=%s",
+                week_id, settlement["status"], total_pnl,
+                settlement["action_next_week"],
+            )
 
         # Persist log
         self._save_iteration_log(rounds)
@@ -412,6 +444,13 @@ class Orchestrator:
     # ------------------------------------------------------------------
     # Factory helpers
     # ------------------------------------------------------------------
+
+    @staticmethod
+    def _current_week_id() -> str:
+        """Return ISO week identifier, e.g. '2026-W09'."""
+        now = datetime.now(timezone.utc)
+        iso = now.isocalendar()
+        return f"{iso[0]}-W{iso[1]:02d}"
 
     @staticmethod
     def _build_deepseek_client(cfg: dict) -> DeepSeekClient:

@@ -90,6 +90,10 @@ def cmd_run(args, config: dict):
     if args.target_profile:
         import json as _json
         config["target_profile"] = _json.loads(args.target_profile)
+    if args.week_settlement_policy:
+        config["week_settlement_policy"] = args.week_settlement_policy
+    if args.cooldown_threshold_weeks is not None:
+        config["cooldown_threshold_weeks"] = args.cooldown_threshold_weeks
 
     orch = Orchestrator(config)
 
@@ -249,6 +253,20 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         metavar="JSON",
         help="Target profile JSON string (overrides defaults)",
+    )
+    parser.add_argument(
+        "--week-settlement-policy",
+        type=str,
+        default=None,
+        choices=["force_settle", "continue"],
+        help="Week settlement policy: force_settle (default) or continue",
+    )
+    parser.add_argument(
+        "--cooldown-threshold-weeks",
+        type=int,
+        default=None,
+        metavar="N",
+        help="Consecutive failing weeks before cooldown (default: 3)",
     )
     parser.add_argument(
         "--config",
