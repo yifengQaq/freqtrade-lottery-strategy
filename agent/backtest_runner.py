@@ -12,16 +12,18 @@ import logging
 import os
 import subprocess
 import glob
+import zipfile
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-# Default paths (relative to freqtrade user_data)
+# Default paths
 DEFAULT_FREQTRADE_DIR = os.environ.get("FREQTRADE_DIR", "/opt/freqtrade")
 DEFAULT_USER_DATA = os.environ.get("FREQTRADE_USER_DATA", "user_data")
 DEFAULT_RESULTS_DIR = os.path.join(DEFAULT_USER_DATA, "backtest_results")
+DEFAULT_FREQTRADE_BIN = os.environ.get("FREQTRADE_BIN", "freqtrade")
 
 
 class BacktestRunner:
@@ -36,6 +38,7 @@ class BacktestRunner:
         strategy_name: str = "LotteryMindsetStrategy",
         timerange: Optional[str] = None,
         extra_args: Optional[list[str]] = None,
+        freqtrade_bin: str = DEFAULT_FREQTRADE_BIN,
     ):
         self.freqtrade_dir = freqtrade_dir
         self.user_data = user_data
@@ -44,6 +47,7 @@ class BacktestRunner:
         self.strategy_name = strategy_name
         self.timerange = timerange
         self.extra_args = extra_args or []
+        self.freqtrade_bin = freqtrade_bin
 
     def run(
         self,
@@ -137,8 +141,9 @@ class BacktestRunner:
         tr = timerange or self.timerange
 
         cmd = [
-            "freqtrade", "hyperopt",
+            self.freqtrade_bin, "hyperopt",
             "--config", self.config_path,
+            "--userdir", self.user_data,
             "--strategy", self.strategy_name,
             "--hyperopt-loss", loss_function,
             "--epochs", str(epochs),
@@ -174,8 +179,9 @@ class BacktestRunner:
     def _build_command(self, config: str, timerange: Optional[str]) -> list[str]:
         """Build the freqtrade backtesting command."""
         cmd = [
-            "freqtrade", "backtesting",
+            self.freqtrade_bin, "backtesting",
             "--config", config,
+            "--userdir", self.user_data,
             "--strategy", self.strategy_name,
             "--export", "trades",
             "--export-filename",
@@ -187,33 +193,41 @@ class BacktestRunner:
         return cmd
 
     def _find_latest_result(self) -> Optional[str]:
-        """Find the most recent backtest result JSON file."""
-        pattern = os.path.join(
-            self.freqtrade_dir, self.results_dir, "backtest-result*.json"
+        """Find the most recent backtest result file (zip or json)."""
+        # Prefer .last_result.json meta file (most reliable)
+        meta_path = os.path.join(
+            self.freqtrade_dir, self.results_dir, ".last_result.json"
         )
-        files = glob.glob(pattern)
-        if not files:
-            # Try the meta file
-            meta_pattern = os.path.join(
-                self.freqtrade_dir, self.results_dir, ".last_result.json"
-            )
-            meta_files = glob.glob(meta_pattern)
-            if meta_files:
-                with open(meta_files[0]) as f:
-                    meta = json.load(f)
-                latest = meta.get("latest_backtest")
-                if latest:
-                    full = os.path.join(
-                        self.freqtrade_dir, self.results_dir, latest
-                    )
-                    if os.path.exists(full):
-                        return full
-            return None
+        if os.path.exists(meta_path):
+            with open(meta_path) as f:
+                meta = json.load(f)
+            latest = meta.get("latest_backtest")
+            if latest:
+                full = os.path.join(
+                    self.freqtrade_dir, self.results_dir, latest
+                )
+                if os.path.exists(full):
+                    return full
 
-        return max(files, key=os.path.getmtime)
+        # Fallback: glob for zip or json
+        for ext in ("*.zip", "*.json"):
+            pattern = os.path.join(
+                self.freqtrade_dir, self.results_dir, f"backtest-result*{ext}"
+            )
+            files = [f for f in glob.glob(pattern) if not f.endswith('.meta.json')]
+            if files:
+                return max(files, key=os.path.getmtime)
+
+        return None
 
     def _load_result(self, path: str) -> dict:
-        """Load and return the backtest result JSON."""
+        """Load and return the backtest result JSON (supports zip and plain json)."""
+        if path.endswith(".zip"):
+            with zipfile.ZipFile(path) as zf:
+                json_names = [n for n in zf.namelist() if n.endswith(".json") and "config" not in n]
+                if not json_names:
+                    return {}
+                return json.loads(zf.read(json_names[0]))
         with open(path) as f:
             return json.load(f)
 
@@ -248,19 +262,37 @@ class BacktestRunner:
             # Core metrics
             metrics["total_profit_pct"] = strat.get("profit_total", 0) * 100
             metrics["total_profit_abs"] = strat.get("profit_total_abs", 0)
-            metrics["max_drawdown_pct"] = strat.get("max_drawdown", 0) * 100
+            # freqtrade 2026: max_drawdown_account (ratio), older: max_drawdown
+            dd_ratio = strat.get("max_drawdown_account", strat.get("max_drawdown", 0))
+            metrics["max_drawdown_pct"] = dd_ratio * 100
             metrics["max_drawdown_abs"] = strat.get("max_drawdown_abs", 0)
             metrics["sharpe_ratio"] = strat.get("sharpe", 0)
             metrics["sortino_ratio"] = strat.get("sortino", 0)
             metrics["profit_factor"] = strat.get("profit_factor", 0)
-            metrics["win_rate"] = strat.get("win_rate", 0)
+            metrics["calmar_ratio"] = strat.get("calmar", 0)
+            metrics["sqn"] = strat.get("sqn", 0)
+            metrics["cagr"] = strat.get("cagr", 0)
+            metrics["expectancy"] = strat.get("expectancy", 0)
+            metrics["expectancy_ratio"] = strat.get("expectancy_ratio", 0)
+            # win_rate: prefer strategy_comparison.winrate → strat.winrate → strat.win_rate
+            comparison = raw.get("strategy_comparison", [])
+            if comparison and comparison[0].get("winrate") is not None:
+                metrics["win_rate"] = comparison[0]["winrate"]
+            elif strat.get("winrate") is not None:
+                metrics["win_rate"] = strat["winrate"]
+            else:
+                metrics["win_rate"] = strat.get("win_rate", 0)
             metrics["total_trades"] = strat.get("total_trades", 0)
+            metrics["trade_count_long"] = strat.get("trade_count_long", 0)
+            metrics["trade_count_short"] = strat.get("trade_count_short", 0)
             metrics["avg_profit_per_trade_pct"] = strat.get(
                 "profit_mean", 0
             ) * 100
             metrics["avg_trade_duration"] = strat.get(
-                "holding_avg", "unknown"
+                "duration_avg", strat.get("holding_avg", "unknown")
             )
+            metrics["backtest_days"] = strat.get("backtest_days", 0)
+            metrics["market_change"] = strat.get("market_change", 0)
             metrics["best_pair"] = strat.get("best_pair", "")
             metrics["worst_pair"] = strat.get("worst_pair", "")
 

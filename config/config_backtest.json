@@ -5,6 +5,7 @@
     "trading_mode": "futures",
     "margin_mode": "isolated",
     "max_open_trades": 1,
+    "candle_type_def": "futures",
     "minimal_roi": {
         "0": 10.0,
         "1440": 5.0,
@@ -13,35 +14,44 @@
     "stoploss": -0.95,
     "trailing_stop": true,
     "trailing_stop_positive": 0.5,
-    "trailing_stop_positive_offset": 2.0,
+    "trailing_stop_positive_offset": 0.8,
     "trailing_only_offset_is_reached": true,
+    "entry_pricing": {
+        "price_side": "other",
+        "use_order_book": true,
+        "order_book_top": 1
+    },
+    "exit_pricing": {
+        "price_side": "other",
+        "use_order_book": true,
+        "order_book_top": 1
+    },
     "exchange": {
         "name": "binance",
-        "pair_whitelist": [],
-        "pair_blacklist": [".*_BUSD"]
+        "pair_whitelist": [
+            "BTC/USDT:USDT",
+            "ETH/USDT:USDT",
+            "SOL/USDT:USDT",
+            "XRP/USDT:USDT",
+            "BNB/USDT:USDT",
+            "ADA/USDT:USDT",
+            "AVAX/USDT:USDT",
+            "LINK/USDT:USDT",
+            "DOT/USDT:USDT",
+            "LTC/USDT:USDT",
+            "BCH/USDT:USDT",
+            "ETC/USDT:USDT",
+            "ATOM/USDT:USDT",
+            "UNI/USDT:USDT",
+            "MATIC/USDT:USDT"
+        ],
+        "pair_blacklist": []
     },
     "pairlists": [
         {
-            "method": "VolumePairList",
-            "number_assets": 30,
-            "sort_key": "quoteVolume",
-            "min_value": 5000000
-        },
-        {
-            "method": "AgeFilter",
-            "min_days_listed": 30
-        },
-        {
-            "method": "SpreadFilter",
-            "max_spread_ratio": 0.005
-        },
-        {
-            "method": "VolatilityFilter",
-            "min_volatility": 0.03,
-            "max_volatility": 0.50,
-            "lookback_days": 10
+            "method": "StaticPairList"
         }
     ],
-    "dataformat_ohlcv": "json",
-    "dataformat_trades": "json"
+    "dataformat_ohlcv": "feather",
+    "dataformat_trades": "feather"
 }
