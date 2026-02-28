@@ -1,0 +1,15 @@
+# Agent 运行配置
+agent:
+  max_rounds: 20
+  stale_rounds_limit: 3
+  deepseek_model: "deepseek-chat"
+  freqtrade_dir: "${FREQTRADE_DIR}"
+  strategy_name: "LotteryMindsetStrategy"
+  config_path: "config/config_backtest.json"
+  timerange_is: "20250901-20251130"
+  timerange_oos: "20251201-20251231"
+  enable_walk_forward: true
+  auto_repair: true
+  repair_max_retries: 3
+  enable_factor_lab: false
+  factor_candidates: 5

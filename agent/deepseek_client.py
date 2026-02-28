@@ -1,0 +1,266 @@
+"""
+DeepSeek API Client for Strategy Iteration Agent.
+
+Wraps the DeepSeek Chat API (OpenAI-compatible) to:
+1. Send strategy context + backtest results to LLM
+2. Receive structured JSON with parameter changes
+3. Handle retries, rate limits, token budgeting
+"""
+
+import json
+import os
+import time
+import logging
+from typing import Any, Optional
+
+import httpx
+
+logger = logging.getLogger(__name__)
+
+# DeepSeek API is OpenAI-compatible
+DEEPSEEK_API_BASE = "https://api.deepseek.com/v1"
+DEFAULT_MODEL = "deepseek-chat"  # deepseek-chat or deepseek-reasoner
+
+
+class DeepSeekClient:
+    """Thin wrapper around DeepSeek Chat Completions API."""
+
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        model: str = DEFAULT_MODEL,
+        base_url: str = DEEPSEEK_API_BASE,
+        max_tokens: int = 4096,
+        temperature: float = 0.3,
+        max_retries: int = 3,
+        timeout: float = 120.0,
+    ):
+        self.api_key = api_key or os.environ.get("DEEPSEEK_API_KEY", "")
+        if not self.api_key:
+            raise ValueError(
+                "DEEPSEEK_API_KEY not set. "
+                "Export it or pass api_key= to DeepSeekClient."
+            )
+
+        self.model = model
+        self.base_url = base_url.rstrip("/")
+        self.max_tokens = max_tokens
+        self.temperature = temperature
+        self.max_retries = max_retries
+        self.timeout = timeout
+
+        self._client = httpx.Client(
+            base_url=self.base_url,
+            headers={
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json",
+            },
+            timeout=self.timeout,
+        )
+
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
+
+    def chat(
+        self,
+        system_prompt: str,
+        user_message: str,
+        response_format: Optional[dict] = None,
+    ) -> str:
+        """Send a chat completion request and return the assistant message."""
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message},
+        ]
+        return self._complete(messages, response_format)
+
+    def chat_with_history(
+        self,
+        system_prompt: str,
+        history: list[dict],
+        user_message: str,
+        response_format: Optional[dict] = None,
+    ) -> str:
+        """Chat with prior conversation history for multi-round iteration."""
+        messages = [{"role": "system", "content": system_prompt}]
+        messages.extend(history)
+        messages.append({"role": "user", "content": user_message})
+        return self._complete(messages, response_format)
+
+    def generate_strategy_patch(
+        self,
+        system_prompt: str,
+        current_strategy_code: str,
+        backtest_results: dict,
+        iteration_round: int,
+        previous_changes: list[dict],
+    ) -> dict:
+        """
+        High-level method: ask DeepSeek to propose strategy changes.
+
+        Returns a structured dict:
+        {
+            "round": int,
+            "changes_made": str,
+            "rationale": str,
+            "code_patch": str,       # Full updated strategy code
+            "config_patch": dict,    # Config changes (if any)
+            "next_action": str,
+        }
+        """
+        user_msg = self._build_iteration_prompt(
+            current_strategy_code,
+            backtest_results,
+            iteration_round,
+            previous_changes,
+        )
+
+        raw = self.chat(
+            system_prompt=system_prompt,
+            user_message=user_msg,
+            response_format={"type": "json_object"},
+        )
+
+        try:
+            result = json.loads(raw)
+        except json.JSONDecodeError:
+            logger.warning("LLM returned non-JSON, attempting extraction...")
+            result = self._extract_json_from_text(raw)
+
+        # Validate required fields
+        required = ["changes_made", "rationale", "code_patch"]
+        for field in required:
+            if field not in result:
+                raise ValueError(f"LLM response missing required field: {field}")
+
+        result.setdefault("round", iteration_round)
+        result.setdefault("next_action", "continue")
+        result.setdefault("config_patch", {})
+
+        return result
+
+    # ------------------------------------------------------------------
+    # Internal
+    # ------------------------------------------------------------------
+
+    def _complete(
+        self,
+        messages: list[dict],
+        response_format: Optional[dict] = None,
+    ) -> str:
+        """Execute chat completion with retry logic."""
+        payload: dict[str, Any] = {
+            "model": self.model,
+            "messages": messages,
+            "max_tokens": self.max_tokens,
+            "temperature": self.temperature,
+            "stream": False,
+        }
+        if response_format:
+            payload["response_format"] = response_format
+
+        for attempt in range(1, self.max_retries + 1):
+            try:
+                resp = self._client.post("/chat/completions", json=payload)
+                resp.raise_for_status()
+                data = resp.json()
+                content = data["choices"][0]["message"]["content"]
+                logger.info(
+                    "DeepSeek response: %d tokens (attempt %d)",
+                    data.get("usage", {}).get("total_tokens", -1),
+                    attempt,
+                )
+                return content
+
+            except httpx.HTTPStatusError as e:
+                if e.response.status_code == 429:
+                    wait = min(2**attempt, 30)
+                    logger.warning("Rate limited, waiting %ds...", wait)
+                    time.sleep(wait)
+                elif e.response.status_code >= 500:
+                    wait = min(2**attempt, 30)
+                    logger.warning("Server error %d, retrying in %ds...",
+                                   e.response.status_code, wait)
+                    time.sleep(wait)
+                else:
+                    raise
+            except httpx.TimeoutException:
+                logger.warning("Timeout on attempt %d/%d", attempt, self.max_retries)
+                if attempt == self.max_retries:
+                    raise
+
+        raise RuntimeError(f"DeepSeek API failed after {self.max_retries} attempts")
+
+    def _build_iteration_prompt(
+        self,
+        strategy_code: str,
+        backtest_results: dict,
+        iteration_round: int,
+        previous_changes: list[dict],
+    ) -> str:
+        """Build the per-round user prompt."""
+        changes_summary = ""
+        if previous_changes:
+            for c in previous_changes[-3:]:  # Only last 3 rounds for context
+                changes_summary += (
+                    f"  Round {c.get('round', '?')}: "
+                    f"{c.get('changes_made', 'N/A')} → "
+                    f"Score: {c.get('score', 'N/A')}\n"
+                )
+
+        return f"""
+## 当前迭代轮次: {iteration_round}
+
+## 当前策略代码
+```python
+{strategy_code}
+```
+
+## 最新回测结果
+```json
+{json.dumps(backtest_results, indent=2, ensure_ascii=False)}
+```
+
+## 历史变更摘要
+{changes_summary if changes_summary else "这是第一轮迭代，无历史记录。"}
+
+## 你的任务
+1. 分析上述回测结果
+2. 识别策略的薄弱环节
+3. 提出 1-2 个具体的参数/逻辑修改
+4. 输出完整的修改后策略代码
+
+请以 JSON 格式返回:
+{{
+    "round": {iteration_round},
+    "changes_made": "简述修改内容",
+    "rationale": "修改理由（基于数据）",
+    "code_patch": "完整的修改后策略代码（Python）",
+    "config_patch": {{}},
+    "next_action": "下一步计划"
+}}
+"""
+
+    @staticmethod
+    def _extract_json_from_text(text: str) -> dict:
+        """Try to extract JSON from text that may contain markdown fences."""
+        import re
+        # Try ```json ... ``` blocks
+        match = re.search(r"```(?:json)?\s*\n?(.*?)\n?```", text, re.DOTALL)
+        if match:
+            return json.loads(match.group(1))
+        # Try raw { ... }
+        match = re.search(r"\{.*\}", text, re.DOTALL)
+        if match:
+            return json.loads(match.group(0))
+        raise ValueError("Cannot extract JSON from LLM response")
+
+    def close(self):
+        self._client.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        self.close()

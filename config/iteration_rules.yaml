@@ -1,0 +1,55 @@
+# ==========================================
+# LLM Agent 迭代规则
+# ==========================================
+
+iteration:
+  max_rounds: 20                # 单轮优化最多迭代 20 次
+  change_scope: "small"         # 每轮只改 1-2 个参数或 1 个逻辑块
+  forbidden_changes:            # 禁止修改的部分
+    - weekly_budget_controller  # 资金管理逻辑不动
+    - stoploss_below: -0.98     # 止损不能比 -98% 更宽
+    - leverage_above: 20        # 杠杆不能超过 20x
+
+evaluation:
+  # Agent 每轮必须输出这些指标
+  required_metrics:
+    - total_profit_pct
+    - max_drawdown_pct
+    - sharpe_ratio
+    - sortino_ratio
+    - profit_factor
+    - win_rate
+    - avg_profit_per_trade_pct
+    - total_trades
+    - stake_limit_hit_count       # 超限次数
+    - avg_trade_duration_hours
+    - weekly_target_hit_rate      # 每周达标率（核心！）
+
+  # 通过标准（OP 策略特有）
+  pass_criteria:
+    weekly_target_hit_rate: ">= 0.25"   # 至少 25% 的周能达标
+    max_drawdown_pct: "<= 95"           # 单周最大就是亏完 100 刀
+    total_trades: ">= 50"              # 足够的统计样本
+    stake_limit_hit_count: "== 0"       # 不允许超限
+    monthly_net_profit_avg: "> 0"       # 月均必须为正
+
+  # 综合评分公式（OP 策略定制）
+  score_formula: >
+    Score =
+      monthly_avg_profit * 0.4
+    + weekly_target_hit_rate * 100 * 0.3
+    - max_monthly_loss * 0.2
+    + (1 / avg_trade_duration_hours) * 0.1
+
+validation:
+  # 防过拟合
+  method: "walk_forward"
+  in_sample_weeks: 12
+  out_of_sample_weeks: 4
+  min_oos_score_ratio: 0.6    # OOS 得分至少是 IS 的 60%
+
+  # 多市场状态
+  must_include_periods:
+    - "bull"      # 上涨期
+    - "bear"      # 下跌期
+    - "sideways"  # 震荡期

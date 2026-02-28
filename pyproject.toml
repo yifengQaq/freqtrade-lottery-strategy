@@ -1,0 +1,29 @@
+[project]
+name = "v2ex-agent"
+version = "0.1.0"
+description = "LLM Agent + Backtest 闭环自动迭代系统"
+requires-python = ">=3.11"
+dependencies = [
+    "httpx",
+    "pyyaml",
+    "pytest",
+]
+
+[project.optional-dependencies]
+pydantic = ["pydantic"]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "pytest-mock",
+]
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["agent*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
