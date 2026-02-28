@@ -486,3 +486,92 @@ class TestAutoRepairExhaustedRollback:
         rolled_back = [r for r in rounds if r["status"] == "rolled_back"]
         assert len(rolled_back) >= 1
         mock_er.rollback_on_exhausted.assert_called()
+
+
+# ===================================================================
+# T049-8: test_multi_backtest_comparison
+# ===================================================================
+
+
+class TestMultiBacktestComparison:
+    """多窗口回测 → 生成对比矩阵 → LLM 调参。"""
+
+    def test_multi_backtest_comparison(self, tmp_path):
+        config = _base_config(tmp_path)
+        config["max_rounds"] = 1
+        config["enable_multi_backtest"] = True
+        config["comparison_windows"] = {
+            "bull": "20250101-20250301",
+            "bear": "20250401-20250601",
+        }
+
+        orch = _make_orchestrator(config)
+
+        # Wire up comparator + target_optimizer (they were built by __init__
+        # but we need to re-attach after _make_orchestrator replaces sub-components)
+        from agent.comparator import Comparator
+        from agent.target_optimizer import TargetOptimizer
+
+        mock_comp = MagicMock(spec=Comparator)
+        mock_comp.run_multi_window.return_value = {
+            "metrics_by_window": {
+                "bull": {"score": 80.0, "monthly_net_profit_avg": 120.0},
+                "bear": {"score": 40.0, "monthly_net_profit_avg": 30.0},
+            },
+            "robustness_score": 65.0,
+        }
+        mock_comp.build_comparison_matrix.return_value = {
+            "round": 1,
+            "candidate_id": "round_1",
+            "windows": ["bull", "bear"],
+            "metrics_by_window": {
+                "bull": {"score": 80.0},
+                "bear": {"score": 40.0},
+            },
+            "robustness_score": 65.0,
+            "dryrun_price_slippage_pct": 0.0,
+            "dryrun_signal_gap_pct": 0.0,
+            "dryrun_pnl_gap_pct": 0.0,
+        }
+        orch.comparator = mock_comp
+        orch.comparison_windows = config["comparison_windows"]
+
+        mock_to = MagicMock(spec=TargetOptimizer)
+        mock_to.compute_gap.return_value = {
+            "round": 1,
+            "target_profile": "default",
+            "deltas": {"monthly_net_profit_avg": -20.0},
+            "weighted_norm": 0.15,
+            "mode": "fine_tune",
+        }
+        orch.target_optimizer = mock_to
+
+        # LLM should receive targeted adjustment call
+        orch.deepseek_client.generate_targeted_adjustment.return_value = {
+            "changes_made": "Adjusted via comparison matrix",
+            "rationale": "Bear market underperformance",
+            "code_patch": VALID_STRATEGY_CODE,
+            "config_patch": {},
+            "next_action": "continue",
+        }
+
+        rounds = orch.run_iteration_loop(max_rounds=1)
+
+        assert len(rounds) == 1
+        r = rounds[0]
+        assert r["status"] == "success"
+
+        # Comparator was called
+        mock_comp.run_multi_window.assert_called_once_with(
+            config["comparison_windows"]
+        )
+        mock_comp.build_comparison_matrix.assert_called_once()
+        mock_comp.save_matrix.assert_called_once()
+
+        # TargetOptimizer was called
+        mock_to.compute_gap.assert_called_once()
+        mock_to.log_gap.assert_called_once()
+
+        # LLM used targeted adjustment (not regular patch)
+        orch.deepseek_client.generate_targeted_adjustment.assert_called_once()
+        orch.deepseek_client.generate_strategy_patch.assert_not_called()

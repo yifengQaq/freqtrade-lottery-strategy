@@ -162,6 +162,58 @@ class DeepSeekClient:
 
         raise ValueError("Cannot parse factor candidates from LLM response")
 
+    def generate_targeted_adjustment(
+        self,
+        system_prompt: str,
+        comparison_matrix: dict,
+        target_gap: dict,
+        current_code: str,
+    ) -> dict:
+        """
+        Generate parameter adjustment suggestions informed by the
+        multi-window comparison matrix and the target gap vector.
+
+        Returns::
+
+            {
+                "changes_made": str,
+                "rationale": str,
+                "code_patch": str,
+                "config_patch": dict,
+                "next_action": str,
+            }
+        """
+        user_msg = (
+            "## Multi-Window Comparison Matrix\n"
+            f"```json\n{json.dumps(comparison_matrix, indent=2, ensure_ascii=False)}\n```\n\n"
+            "## Target Gap Vector\n"
+            f"```json\n{json.dumps(target_gap, indent=2, ensure_ascii=False)}\n```\n\n"
+            f"## Current Strategy Code\n```python\n{current_code}\n```\n\n"
+            "Based on the comparison matrix and target gap, suggest parameter "
+            "adjustments to close the gap.  Return JSON with keys: "
+            '"changes_made", "rationale", "code_patch", "config_patch", "next_action".'
+        )
+
+        raw = self.chat(
+            system_prompt=system_prompt,
+            user_message=user_msg,
+            response_format={"type": "json_object"},
+        )
+
+        try:
+            result = json.loads(raw)
+        except json.JSONDecodeError:
+            result = self._extract_json_from_text(raw)
+
+        if "code_patch" not in result:
+            raise ValueError("LLM targeted-adjustment response missing 'code_patch'")
+
+        result.setdefault("changes_made", "")
+        result.setdefault("rationale", "")
+        result.setdefault("config_patch", {})
+        result.setdefault("next_action", "continue")
+        return result
+
     def generate_strategy_patch(
         self,
         system_prompt: str,

@@ -20,11 +20,13 @@ from pathlib import Path
 from typing import Optional
 
 from agent.backtest_runner import BacktestRunner
+from agent.comparator import Comparator
 from agent.deepseek_client import DeepSeekClient
 from agent.error_recovery import ErrorRecoveryManager
 from agent.evaluator import Evaluator, EvalResult
 from agent.factor_lab import FactorLab
 from agent.strategy_modifier import StrategyModifier
+from agent.target_optimizer import TargetOptimizer
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +50,10 @@ class Orchestrator:
         self.repair_max_retries: int = config.get("repair_max_retries", 3)
         self.enable_factor_lab: bool = config.get("enable_factor_lab", False)
         self.factor_candidates: int = config.get("factor_candidates", 5)
+        self.enable_multi_backtest: bool = config.get("enable_multi_backtest", False)
+        self.comparison_windows: dict[str, str] = config.get("comparison_windows", {})
+        self.dryrun_input: dict = config.get("dryrun_input", {})
+        self.target_profile: dict | None = config.get("target_profile", None)
 
         # --- sub-components (can be overridden in tests) ---
         self.deepseek_client: DeepSeekClient = self._build_deepseek_client(config)
@@ -73,6 +79,26 @@ class Orchestrator:
                 experiment_log_path=os.path.join(
                     config.get("results_dir", "results"),
                     "experiments", "factor_trials.jsonl",
+                ),
+            )
+
+        # Comparator + TargetOptimizer (lazy)
+        self.comparator: Comparator | None = None
+        if self.enable_multi_backtest:
+            self.comparator = Comparator(
+                backtest_runner=self.backtest_runner,
+                output_dir=os.path.join(
+                    config.get("results_dir", "results"), "comparisons",
+                ),
+            )
+
+        self.target_optimizer: TargetOptimizer | None = None
+        if self.enable_multi_backtest:
+            self.target_optimizer = TargetOptimizer(
+                target_profile=self.target_profile,
+                log_path=os.path.join(
+                    config.get("results_dir", "results"),
+                    "comparisons", "target_gap_history.jsonl",
                 ),
             )
 
@@ -208,15 +234,58 @@ class Orchestrator:
             for r in previous_rounds
         ]
 
-        # 3. Call DeepSeek
+        # 2b. Multi-window comparison + target gap (optional)
+        comparison_matrix: dict | None = None
+        target_gap: dict | None = None
+
+        if self.comparator is not None and self.comparison_windows:
+            try:
+                mw_result = self.comparator.run_multi_window(
+                    self.comparison_windows
+                )
+                dryrun_dev = None
+                if self.dryrun_input:
+                    dryrun_dev = self.comparator.compute_dryrun_deviation(
+                        backtest_context, self.dryrun_input,
+                    )
+                comparison_matrix = self.comparator.build_comparison_matrix(
+                    round_num=round_num,
+                    candidate_id=f"round_{round_num}",
+                    multi_window_result=mw_result,
+                    dryrun_deviation=dryrun_dev,
+                )
+                self.comparator.save_matrix(comparison_matrix)
+                base_record["comparison_matrix"] = comparison_matrix
+            except Exception as exc:
+                logger.warning("Multi-window comparison failed: %s", exc)
+
+        if self.target_optimizer is not None:
+            try:
+                target_gap = self.target_optimizer.compute_gap(
+                    backtest_context, round_num
+                )
+                self.target_optimizer.log_gap(target_gap)
+                base_record["target_gap"] = target_gap
+            except Exception as exc:
+                logger.warning("Target gap computation failed: %s", exc)
+
+        # 3. Call DeepSeek — prefer targeted adjustment when data available
         try:
-            llm_result = self.deepseek_client.generate_strategy_patch(
-                system_prompt=self.system_prompt,
-                current_strategy_code=current_code,
-                backtest_results=backtest_context,
-                iteration_round=round_num,
-                previous_changes=previous_changes,
-            )
+            if comparison_matrix is not None and target_gap is not None:
+                llm_result = self.deepseek_client.generate_targeted_adjustment(
+                    system_prompt=self.system_prompt,
+                    comparison_matrix=comparison_matrix,
+                    target_gap=target_gap,
+                    current_code=current_code,
+                )
+            else:
+                llm_result = self.deepseek_client.generate_strategy_patch(
+                    system_prompt=self.system_prompt,
+                    current_strategy_code=current_code,
+                    backtest_results=backtest_context,
+                    iteration_round=round_num,
+                    previous_changes=previous_changes,
+                )
         except Exception as exc:
             base_record["next_action"] = f"LLM call failed: {exc}"
             return base_record

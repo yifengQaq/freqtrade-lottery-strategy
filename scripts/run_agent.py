@@ -73,6 +73,23 @@ def cmd_run(args, config: dict):
         config["enable_factor_lab"] = True
     if args.factor_candidates is not None:
         config["factor_candidates"] = args.factor_candidates
+    if args.multi_backtest:
+        config["enable_multi_backtest"] = True
+    if args.comparison_windows:
+        # Parse "bull=20250101-20250301,bear=20250401-20250601"
+        windows = {}
+        for pair in args.comparison_windows.split(","):
+            pair = pair.strip()
+            if "=" in pair:
+                label, tr = pair.split("=", 1)
+                windows[label.strip()] = tr.strip()
+        config["comparison_windows"] = windows
+    if args.dryrun_input:
+        import json as _json
+        config["dryrun_input"] = _json.loads(args.dryrun_input)
+    if args.target_profile:
+        import json as _json
+        config["target_profile"] = _json.loads(args.target_profile)
 
     orch = Orchestrator(config)
 
@@ -205,6 +222,33 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         metavar="N",
         help="Number of factor candidates to generate per round (default: 5)",
+    )
+    parser.add_argument(
+        "--multi-backtest",
+        action="store_true",
+        default=False,
+        help="Enable multi-window backtesting with comparison matrix",
+    )
+    parser.add_argument(
+        "--comparison-windows",
+        type=str,
+        default=None,
+        metavar="SPEC",
+        help="Window spec: 'bull=20250101-20250301,bear=20250401-20250601,...'",
+    )
+    parser.add_argument(
+        "--dryrun-input",
+        type=str,
+        default=None,
+        metavar="JSON",
+        help="Dry-run metrics JSON string for deviation analysis",
+    )
+    parser.add_argument(
+        "--target-profile",
+        type=str,
+        default=None,
+        metavar="JSON",
+        help="Target profile JSON string (overrides defaults)",
     )
     parser.add_argument(
         "--config",
