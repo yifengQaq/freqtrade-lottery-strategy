@@ -127,6 +127,33 @@ Agent 运行配置。
 | status | str | active/promoted/quarantined |
 | score | float | 最新得分 |
 
+### ComparisonMatrix
+
+多回测与 Dry Run 联合对比结果。
+
+| Field | Type | Description |
+|-------|------|-------------|
+| round | int | 关联轮次 |
+| candidate_id | str | 候选ID |
+| windows | list[str] | 回测窗口（bull/bear/sideways） |
+| metrics_by_window | dict | 各窗口指标集合 |
+| robustness_score | float | 稳健性评分 |
+| dryrun_price_slippage_pct | float | Dry Run 成交价偏差 |
+| dryrun_signal_gap_pct | float | Dry Run 信号频率偏差 |
+| dryrun_pnl_gap_pct | float | Dry Run PnL 偏差 |
+
+### TargetGapVector
+
+Story 目标差距向量。
+
+| Field | Type | Description |
+|-------|------|-------------|
+| round | int | 关联轮次 |
+| target_profile | str | 目标配置名 |
+| deltas | dict | 目标指标差值（target-current） |
+| weighted_norm | float | 加权范数（越小越接近目标） |
+| mode | str | explore/fine_tune |
+
 ## Relationships
 
 ```
@@ -137,6 +164,8 @@ IterationRound ──1:1──▶ StrategyVersion
 IterationRound ──1:N──▶ ErrorIncident
 ErrorIncident ──1:N──▶ FixAttempt
 IterationRound ──1:N──▶ FactorCandidate
+IterationRound ──1:N──▶ ComparisonMatrix
+IterationRound ──1:1──▶ TargetGapVector
 ```
 
 ## State Transitions
@@ -161,3 +190,5 @@ IterationRound.status:
 - `results/backtest_outputs/round_NNN_*.json`: 原始回测结果
 - `results/error_incidents.jsonl`: ErrorIncident + FixAttempt 记录
 - `results/experiments/factor_trials.jsonl`: FactorCandidate 及实验结果账本
+- `results/comparisons/comparison_matrix.json`: 多回测 + Dry Run 对比矩阵
+- `results/comparisons/target_gap_history.jsonl`: TargetGapVector 迭代历史

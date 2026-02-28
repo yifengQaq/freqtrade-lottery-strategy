@@ -6,7 +6,7 @@
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: Can run in parallel (different files, no dependencies)
-- **[Story]**: Which user story (US1=单轮迭代, US2=多轮闭环, US3=walk-forward, US4=版本管理, US5=自动纠错+因子生成)
+- **[Story]**: Which user story (US1=单轮迭代, US2=多轮闭环, US3=walk-forward, US4=版本管理, US5=自动纠错+因子生成, US6=多回测+DryRun动态构建)
 
 ## Path Conventions
 
@@ -182,6 +182,36 @@
 
 ---
 
+## Phase 9: User Story 6 — 多回测 + Dry Run 对比驱动动态构建 (Priority: P1)
+
+**Goal**: 基于多窗口回测与 Dry Run 对比结果，动态调整策略参数并逼近 Story 目标
+
+**Independent Test**: 单个候选在 bull/bear/sideways + Dry Run 下产出对比矩阵，并自动生成下一轮参数动作
+
+### Tests for User Story 6
+
+- [ ] T047 [P] [US6] 编写单元测试 `tests/unit/test_comparator.py` — 覆盖多回测结果聚合、稳健性评分、Dry Run 偏差计算
+- [ ] T048 [P] [US6] 编写单元测试 `tests/unit/test_target_optimizer.py` — 覆盖目标差距向量计算、微调模式切换、参数步长控制
+- [ ] T049 [P] [US6] 扩展集成测试 `tests/integration/test_orchestrator.py` — 验证“对比矩阵→目标差距→LLM调参建议”主链路
+
+### Implementation for User Story 6
+
+- [ ] T050 [US6] 实现 `agent/comparator.py`：
+    - 聚合多窗口回测（bull/bear/sideways）
+    - 接入 Dry Run 快照并计算偏差（价格/信号/PnL）
+    - 输出 `results/comparisons/comparison_matrix.json`
+- [ ] T051 [US6] 实现 `agent/target_optimizer.py`：
+    - 计算 TargetGapVector（Story 目标差距）
+    - 生成参数调整方向与步长
+    - 接近目标时进入微调模式（更小步长）
+    - 记录 `results/comparisons/target_gap_history.jsonl`
+- [ ] T052 [US6] 更新 `agent/deepseek_client.py`，新增 `generate_targeted_adjustment()`，输入对比矩阵与目标差距
+- [ ] T053 [US6] 更新 `agent/orchestrator.py`：每轮先跑 comparator，再跑 target optimizer，再调用 LLM 执行目标导向调参
+- [ ] T054 [US6] 更新 `scripts/run_agent.py`，新增参数：`--multi-backtest`, `--comparison-windows`, `--dryrun-input`, `--target-profile`
+- [ ] T055 [US6] 执行 US6 测试并验证目标逼近效果（TargetGapVector 加权范数下降）
+
+---
+
 ## Dependencies
 
 ```
@@ -199,6 +229,8 @@ Phase 6 (US4: 版本管理 — 依赖 US1 的 strategy_modifier)
     ↓
 Phase 8 (US5: 自动纠错+因子生成 — 依赖 US2/US3/US4)
     ↓
+Phase 9 (US6: 多回测+DryRun动态构建 — 依赖 US2/US3/US5)
+    ↓
 Phase 7 (Polish — 依赖所有 above)
 ```
 
@@ -213,13 +245,14 @@ Phase 7 (Polish — 依赖所有 above)
 1. **MVP = Phase 1 + 2 + 3**: 实现后即可手动触发单轮迭代
 2. **Full Loop = + Phase 4**: 自动化多轮循环
 3. **Resilience = + Phase 8**: 自动纠错 + 因子实验闭环
-4. **Production = + Phase 5 + 6 + 7 + 8**: 防过拟合 + 版本管理 + 自修复 + 文档
+4. **Adaptive Build = + Phase 9**: 多回测 + Dry Run 对比驱动动态构建
+5. **Production = + Phase 5 + 6 + 7 + 8 + 9**: 防过拟合 + 版本管理 + 自修复 + 动态构建 + 文档
 
 ## Summary
 
 | Metric | Value |
 |--------|-------|
-| Total Tasks | 46 |
+| Total Tasks | 55 |
 | Phase 1 (Setup) | 5 |
 | Phase 2 (Foundation) | 6 |
 | Phase 3 (US1 MVP) | 9 |
@@ -227,6 +260,7 @@ Phase 7 (Polish — 依赖所有 above)
 | Phase 5 (US3 WF) | 4 |
 | Phase 6 (US4 Versions) | 4 |
 | Phase 8 (US5 Recovery+Factors) | 9 |
+| Phase 9 (US6 Multi-BT+DryRun) | 9 |
 | Phase 7 (Polish) | 5 |
-| Parallel Opportunities | 17 tasks |
+| Parallel Opportunities | 20 tasks |
 | MVP Scope | US1 (Phase 1-3, 20 tasks) |
