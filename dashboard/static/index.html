@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V2ex-Agent Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <!-- ========== Top Status Bar ========== -->
+  <header id="status-bar">
+    <div class="logo">
+      <h1>🤖 V2ex-Agent</h1>
+      <span id="status-badge" class="badge stopped">STOPPED</span>
+    </div>
+    <div class="stats">
+      <div class="stat-item">
+        <span class="stat-label">Epoch</span>
+        <span id="stat-epoch" class="stat-value">-</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Round</span>
+        <span id="stat-round" class="stat-value">-</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">成功率</span>
+        <span id="stat-success" class="stat-value">-</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">自动修复</span>
+        <span id="stat-fixes" class="stat-value">-</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">最佳</span>
+        <span id="stat-best" class="stat-value">-</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">运行时间</span>
+        <span id="stat-uptime" class="stat-value">-</span>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="btn-start" class="btn btn-start" onclick="controlAgent('start')">▶ 启动</button>
+      <button id="btn-stop" class="btn btn-stop" onclick="controlAgent('stop')">⏹ 停止</button>
+      <button class="btn btn-refresh" onclick="refreshAll()">🔄 刷新</button>
+    </div>
+  </header>
+
+  <!-- ========== Tab Navigation ========== -->
+  <nav class="tabs">
+    <button class="tab active" data-tab="dashboard" onclick="switchTab('dashboard')">📊 总览</button>
+    <button class="tab" data-tab="rounds" onclick="switchTab('rounds')">📋 轮次</button>
+    <button class="tab" data-tab="windows" onclick="switchTab('windows')">🌐 多窗口</button>
+    <button class="tab" data-tab="strategy" onclick="switchTab('strategy')">📝 策略Diff</button>
+    <button class="tab" data-tab="log" onclick="switchTab('log')">📜 日志</button>
+  </nav>
+
+  <!-- ========== Dashboard Tab ========== -->
+  <section id="tab-dashboard" class="tab-content active">
+    <div class="chart-container">
+      <h2>得分趋势 <small>(评估分 — 越高越好)</small></h2>
+      <canvas id="score-chart"></canvas>
+    </div>
+    <div class="chart-container">
+      <h2>Epoch 重置历史</h2>
+      <div id="epoch-timeline"></div>
+    </div>
+  </section>
+
+  <!-- ========== Rounds Tab ========== -->
+  <section id="tab-rounds" class="tab-content">
+    <h2>轮次详情</h2>
+    <div class="table-wrapper">
+      <table id="rounds-table">
+        <thead>
+          <tr>
+            <th>Epoch</th>
+            <th>Round</th>
+            <th>评估分</th>
+            <th>目标距离</th>
+            <th>状态</th>
+            <th>自动修复</th>
+            <th>时间</th>
+            <th>变更描述</th>
+          </tr>
+        </thead>
+        <tbody id="rounds-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ========== Multi-Window Tab ========== -->
+  <section id="tab-windows" class="tab-content">
+    <div class="windows-grid">
+      <div class="chart-container">
+        <h2>多窗口收益对比</h2>
+        <canvas id="window-bar-chart"></canvas>
+      </div>
+      <div class="chart-container">
+        <h2>多窗口雷达图</h2>
+        <canvas id="window-radar-chart"></canvas>
+      </div>
+    </div>
+    <div id="window-details" class="chart-container">
+      <h2>窗口详情</h2>
+      <div id="window-metrics-table"></div>
+    </div>
+  </section>
+
+  <!-- ========== Strategy Diff Tab ========== -->
+  <section id="tab-strategy" class="tab-content">
+    <div class="diff-controls">
+      <label>版本 A: <select id="diff-a"></select></label>
+      <label>版本 B: <select id="diff-b"></select></label>
+      <button class="btn btn-refresh" onclick="loadDiff()">对比</button>
+    </div>
+    <div id="diff-output" class="diff-container"></div>
+  </section>
+
+  <!-- ========== Log Tab ========== -->
+  <section id="tab-log" class="tab-content">
+    <div class="log-controls">
+      <label>显示行数: <input id="log-tail" type="number" value="200" min="50" max="2000" step="50"></label>
+      <label><input id="log-auto-scroll" type="checkbox" checked> 自动滚动</label>
+      <button class="btn btn-refresh" onclick="loadLog()">刷新</button>
+    </div>
+    <pre id="log-output" class="log-container"></pre>
+  </section>
+
+  <footer>
+    <span>V2ex-Agent Dashboard v1.0 · 自动刷新 <span id="refresh-countdown">5</span>s</span>
+    <label><input id="auto-refresh-toggle" type="checkbox" checked onchange="toggleAutoRefresh()"> 自动刷新</label>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
