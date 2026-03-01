@@ -34,6 +34,22 @@ FORBIDDEN_PATTERNS = [
 MAX_LEVERAGE = 20
 MIN_STOPLOSS = -0.98  # Can't be wider than -98%
 
+# Common LLM misspellings → correct identifiers.
+# DeepSeek consistently drops the 'b' in 'balance'.
+TYPO_FIXES: dict[str, str] = {
+    "wallet_alance": "wallet_balance",
+    "current_alance": "current_balance",
+    "wallet_blance": "wallet_balance",
+    "current_blance": "current_balance",
+    "walett_balance": "wallet_balance",
+    "curent_balance": "current_balance",
+    "walet_balance": "wallet_balance",
+    "curren_balance": "current_balance",
+    "bands_std": "bbands_std",
+    "band_std": "bbands_std",
+    "bband_std": "bbands_std",
+}
+
 
 class StrategyModifier:
     """Safely apply LLM-generated strategy modifications."""
@@ -76,7 +92,12 @@ class StrategyModifier:
         errors = []
         warnings = []
 
-        # 1. Syntax validation
+        # 1. Auto-fix known LLM typos
+        new_code, typo_fixes = self._fix_typos(new_code)
+        if typo_fixes:
+            warnings.append(f"Auto-fixed LLM typos: {typo_fixes}")
+
+        # 2. Syntax validation
         syntax_ok, syntax_err = self._validate_syntax(new_code)
         if not syntax_ok:
             errors.append(f"Syntax error: {syntax_err}")
@@ -87,7 +108,7 @@ class StrategyModifier:
                 "warnings": warnings,
             }
 
-        # 2. Safety checks
+        # 3. Safety checks
         safety_errors, safety_warnings = self._safety_check(new_code)
         errors.extend(safety_errors)
         warnings.extend(safety_warnings)
@@ -100,10 +121,10 @@ class StrategyModifier:
                 "warnings": warnings,
             }
 
-        # 3. Backup current version
+        # 4. Backup current version
         backup_path = self._backup(round_num, changes_description)
 
-        # 4. Write new code (atomic)
+        # 5. Write new code (atomic)
         try:
             self._atomic_write(self.strategy_path, new_code)
             logger.info(
@@ -198,6 +219,24 @@ class StrategyModifier:
             return True, ""
         except SyntaxError as e:
             return False, f"Line {e.lineno}: {e.msg}"
+
+    @staticmethod
+    def _fix_typos(code: str) -> tuple[str, dict[str, int]]:
+        """
+        Auto-fix known LLM variable-name misspellings.
+
+        Returns (fixed_code, {typo: count_fixed}).
+        Uses word-boundary regex to avoid clobbering substrings.
+        """
+        fixes: dict[str, int] = {}
+        for typo, correct in TYPO_FIXES.items():
+            pattern = re.compile(r"\b" + re.escape(typo) + r"\b")
+            code, n = pattern.subn(correct, code)
+            if n:
+                fixes[f"{typo}->{correct}"] = n
+        if fixes:
+            logger.warning("Auto-fixed LLM typos in strategy code: %s", fixes)
+        return code, fixes
 
     def _safety_check(self, code: str) -> tuple[list[str], list[str]]:
         """

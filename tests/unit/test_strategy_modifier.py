@@ -267,3 +267,95 @@ class TestVersionManagement:
         """回滚不存在的轮次返回 False"""
         mod = _make_modifier(tmp_path)
         assert mod.rollback(999) is False
+
+
+# ===================================================================
+# Typo auto-fix
+# ===================================================================
+
+
+class TestTypoAutoFix:
+    """LLM 拼写错误自动修正测试组"""
+
+    def test_fix_wallet_alance(self, tmp_path):
+        """wallet_alance → wallet_balance 自动修正"""
+        code = VALID_STRATEGY_CODE.replace(
+            "def can_open_trade(self):",
+            "def can_open_trade(self):\n        wallet_alance = 100",
+        )
+        mod = _make_modifier(tmp_path)
+        result = mod.apply_patch(code, round_num=1, changes_description="typo test")
+        assert result["success"] is True
+        current = mod.get_current_code()
+        assert "wallet_alance" not in current
+        assert "wallet_balance" in current
+        assert any("Auto-fixed" in w for w in result["warnings"])
+
+    def test_fix_current_alance(self, tmp_path):
+        """current_alance → current_balance 自动修正"""
+        code = VALID_STRATEGY_CODE.replace(
+            "def can_open_trade(self):",
+            "def can_open_trade(self):\n        current_alance = 50",
+        )
+        mod = _make_modifier(tmp_path)
+        result = mod.apply_patch(code, round_num=1, changes_description="typo test")
+        assert result["success"] is True
+        current = mod.get_current_code()
+        assert "current_alance" not in current
+        assert "current_balance" in current
+
+    def test_fix_bands_std(self, tmp_path):
+        """bands_std → bbands_std 自动修正"""
+        code = VALID_STRATEGY_CODE.replace(
+            "def populate_indicators(self, dataframe, metadata):",
+            "def populate_indicators(self, dataframe, metadata):\n        x = self.bands_std",
+        )
+        mod = _make_modifier(tmp_path)
+        result = mod.apply_patch(code, round_num=1, changes_description="typo test")
+        assert result["success"] is True
+        current = mod.get_current_code()
+        assert "self.bands_std" not in current
+        assert "self.bbands_std" in current
+
+    def test_no_false_positive_balance(self, tmp_path):
+        """正确的 wallet_balance 不会被误改"""
+        code = VALID_STRATEGY_CODE.replace(
+            "def can_open_trade(self):",
+            "def can_open_trade(self):\n        wallet_balance = 100",
+        )
+        mod = _make_modifier(tmp_path)
+        result = mod.apply_patch(code, round_num=1, changes_description="no typo")
+        assert result["success"] is True
+        current = mod.get_current_code()
+        assert "wallet_balance" in current
+        # No typo warnings when code is correct
+        assert not any("Auto-fixed" in w for w in result["warnings"])
+
+    def test_fix_multiple_typos_same_code(self, tmp_path):
+        """同一份代码中多种拼写错误全部修正"""
+        code = VALID_STRATEGY_CODE.replace(
+            "def can_open_trade(self):",
+            (
+                "def can_open_trade(self):\n"
+                "        wallet_alance = 100\n"
+                "        current_alance = 50\n"
+                "        x = self.bands_std"
+            ),
+        )
+        mod = _make_modifier(tmp_path)
+        result = mod.apply_patch(code, round_num=1, changes_description="multi typo")
+        assert result["success"] is True
+        current = mod.get_current_code()
+        assert "wallet_alance" not in current
+        assert "current_alance" not in current
+        assert "self.bands_std" not in current
+        assert "wallet_balance" in current
+        assert "current_balance" in current
+        assert "self.bbands_std" in current
+
+    def test_fix_typos_static_method(self):
+        """_fix_typos 静态方法直接测试"""
+        code = "x = wallet_alance + current_alance"
+        fixed, fixes = StrategyModifier._fix_typos(code)
+        assert fixed == "x = wallet_balance + current_balance"
+        assert len(fixes) == 2

@@ -73,6 +73,16 @@
 - timeframe: 15m, 1h
 - **验证窗口**: 牛市(2021Q1) / 熊市(2022Q3) / 横盘(2023Q3) / 恢复(2024H1) / 近期(2025H1)
 
+## ⚠️ 受保护的变量名（绝对不能拼错或重命名！）
+
+以下变量名在策略代码中被多处引用，拼写错误会导致 NameError 崩溃：
+- `wallet_balance`（❌ 不是 `wallet_alance`、`wallet_blance`、`walet_balance`）
+- `current_balance`（❌ 不是 `current_alance`、`current_blance`、`curent_balance`）
+- `self.budget_controller`
+- `self.bbands_period`、`self.bbands_std`（❌ 不是 `bands_std`、`band_std`）
+
+**规则：所有 confirm_trade_entry / confirm_trade_exit / custom_stake_amount 中的变量名，必须与原始代码保持一致。**
+
 ## ⚠️ talib 正确用法（必须严格遵守，写错会导致 TypeError 崩溃！）
 
 ```python
