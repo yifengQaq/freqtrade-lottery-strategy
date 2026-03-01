@@ -2,6 +2,7 @@
 agent:
   max_rounds: 20
   stale_rounds_limit: 3
+  continuous_mode: false          # true = 无限循环, stale/fail 时 reset 继续探索
   deepseek_model: "deepseek-chat"
   freqtrade_dir: "${FREQTRADE_DIR}"
   freqtrade_bin: "${FREQTRADE_BIN}"

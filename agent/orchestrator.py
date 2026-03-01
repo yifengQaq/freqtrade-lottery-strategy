@@ -8,8 +8,9 @@ Coordinates all Phase 3 modules:
 - StrategyModifier: safe code writes + versioning
 
 Terminates when:
-- max_rounds reached
+- max_rounds reached (unless continuous_mode=True)
 - stale_rounds_limit consecutive rounds with no improvement
+  → in continuous mode, resets to best strategy and continues
 """
 
 import json
@@ -48,6 +49,7 @@ class Orchestrator:
         self.config = config
         self.max_rounds: int = config.get("max_rounds", 20)
         self.stale_rounds_limit: int = config.get("stale_rounds_limit", 3)
+        self.continuous_mode: bool = config.get("continuous_mode", False)
         self.enable_walk_forward: bool = config.get("enable_walk_forward", False)
         self.enable_auto_repair: bool = config.get("enable_auto_repair", False)
         self.repair_max_retries: int = config.get("repair_max_retries", 3)
@@ -137,15 +139,34 @@ class Orchestrator:
         """
         Execute the main optimisation loop.
 
+        In continuous mode (``continuous_mode=True``), the loop runs
+        indefinitely (max_rounds is ignored).  When stale or consecutive
+        failures are detected the agent resets to the best-known strategy
+        and continues exploring.
+
         Returns:
             List of ``IterationRound`` dicts (one per completed round).
         """
         cap = max_rounds if max_rounds is not None else self.max_rounds
         rounds: list[dict] = []
         best_score: float = float("-inf")
+        best_round: int = 0
+        epoch: int = 1          # reset counter for continuous mode
+        round_num = 0
 
-        for round_num in range(1, cap + 1):
-            logger.info("===== Round %d / %d =====", round_num, cap)
+        def _next_round() -> bool:
+            """Return True if we should continue to the next round."""
+            nonlocal round_num
+            round_num += 1
+            if self.continuous_mode:
+                return True          # never stop on round count alone
+            return round_num <= cap
+
+        while _next_round():
+            if self.continuous_mode:
+                logger.info("===== Epoch %d · Round %d =====", epoch, round_num)
+            else:
+                logger.info("===== Round %d / %d =====", round_num, cap)
 
             record = self._run_single_round(round_num, rounds)
             rounds.append(record)
@@ -154,6 +175,7 @@ class Orchestrator:
             if record["status"] == "success":
                 if record["score"] > best_score:
                     best_score = record["score"]
+                    best_round = round_num
 
             # Overfitting check (walk-forward)
             if (
@@ -172,13 +194,28 @@ class Orchestrator:
                             round_num - 1,
                         )
 
-            # Termination check
-            should_stop, reason = self._check_termination(rounds)
-            if should_stop:
+            # Termination / reset check
+            action, reason = self._check_termination(rounds)
+            if action == "stop":
                 logger.info("Terminating: %s", reason)
                 if rounds:
                     rounds[-1]["next_action"] = f"STOP: {reason}"
                 break
+            elif action == "reset":
+                # Continuous mode: reset to best strategy and keep going
+                epoch += 1
+                logger.info(
+                    "Epoch %d reset: %s — rolling back to best round %d (score=%.2f)",
+                    epoch, reason, best_round, best_score,
+                )
+                if best_round > 0:
+                    self.strategy_modifier.rollback(best_round)
+                    self._sync_strategy_to_userdata()
+                # Save incremental log at each epoch boundary
+                self._save_iteration_log(rounds)
+                record["next_action"] = (
+                    f"RESET epoch {epoch}: {reason} → rollback to R{best_round}"
+                )
 
         # Weekly settlement (if enabled and we have weekly_pnl data)
         if self.weekly_settlement is not None:
@@ -408,19 +445,22 @@ class Orchestrator:
     # Termination
     # ------------------------------------------------------------------
 
-    def _check_termination(self, rounds: list[dict]) -> tuple[bool, str]:
+    def _check_termination(self, rounds: list[dict]) -> tuple[str, str]:
         """
-        Check whether the loop should stop.
+        Check whether the loop should stop or reset.
 
         Returns:
-            (should_stop, reason)
+            (action, reason) where action is one of:
+            - ""       → continue normally
+            - "stop"   → terminate the loop
+            - "reset"  → reset to best strategy and continue (continuous mode)
         """
         if not rounds:
-            return False, ""
+            return "", ""
 
         limit = self.stale_rounds_limit
 
-        # Consecutive failure check: stop if last N rounds ALL failed
+        # Consecutive failure check
         consecutive_fails = 0
         for r in reversed(rounds):
             if r["status"] in ("failed", "rolled_back"):
@@ -428,10 +468,11 @@ class Orchestrator:
             else:
                 break
         if consecutive_fails >= limit:
-            return True, (
+            reason = (
                 f"Last {consecutive_fails} consecutive rounds failed "
                 f"(stale_rounds_limit={limit})"
             )
+            return ("reset" if self.continuous_mode else "stop"), reason
 
         # Stale-rounds check: last N *successful* rounds show no improvement
         successful = [r for r in rounds if r["status"] == "success"]
@@ -440,12 +481,13 @@ class Orchestrator:
             scores = [r["score"] for r in tail]
             # If the scores are non-increasing over the window → stale
             if all(scores[i] >= scores[i + 1] for i in range(len(scores) - 1)):
-                return True, (
+                reason = (
                     f"No improvement in last {limit} successful rounds "
                     f"(scores: {scores})"
                 )
+                return ("reset" if self.continuous_mode else "stop"), reason
 
-        return False, ""
+        return "", ""
 
     # ------------------------------------------------------------------
     # Persistence

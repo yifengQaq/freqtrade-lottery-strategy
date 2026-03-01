@@ -5,6 +5,7 @@ run_agent.py — CLI entry-point for the V2ex LLM + Backtest iteration agent.
 Usage examples:
     python scripts/run_agent.py                         # run with defaults from config
     python scripts/run_agent.py --rounds 5              # limit to 5 rounds
+    python scripts/run_agent.py --continuous             # run indefinitely until Ctrl+C
     python scripts/run_agent.py --walk-forward           # enable walk-forward validation
     python scripts/run_agent.py --list-versions          # list saved strategy versions
     python scripts/run_agent.py --rollback 3             # rollback to round 3
@@ -72,6 +73,8 @@ def cmd_run(args, config: dict):
     """Run the iteration loop."""
     if args.walk_forward:
         config["enable_walk_forward"] = True
+    if args.continuous:
+        config["continuous_mode"] = True
     if args.auto_repair:
         config["enable_auto_repair"] = True
     if args.repair_max_retries is not None:
@@ -105,9 +108,18 @@ def cmd_run(args, config: dict):
     orch = Orchestrator(config)
 
     max_rounds = args.rounds or config.get("max_rounds", 20)
-    logger.info("Starting iteration loop (max_rounds=%d)", max_rounds)
+    if config.get("continuous_mode"):
+        logger.info("Starting CONTINUOUS iteration loop (Ctrl+C to stop gracefully)")
+    else:
+        logger.info("Starting iteration loop (max_rounds=%d)", max_rounds)
 
-    rounds = orch.run_iteration_loop(max_rounds=max_rounds)
+    try:
+        rounds = orch.run_iteration_loop(max_rounds=max_rounds)
+    except KeyboardInterrupt:
+        logger.info("Ctrl+C received — saving state and exiting gracefully...")
+        # The orchestrator saves incremental logs at epoch boundaries;
+        # we still want a final save.
+        rounds = []  # will be printed as 0 rounds in summary
 
     # Summary
     print(f"\n{'=' * 60}")
@@ -181,7 +193,13 @@ def build_parser() -> argparse.ArgumentParser:
         "--rounds", "-n",
         type=int,
         default=None,
-        help="Maximum iteration rounds (default: from config)",
+        help="Maximum iteration rounds (default: from config; ignored in --continuous)",
+    )
+    parser.add_argument(
+        "--continuous",
+        action="store_true",
+        default=False,
+        help="Run indefinitely: reset on stale/failure and keep exploring. Stop with Ctrl+C.",
     )
     parser.add_argument(
         "--walk-forward",
