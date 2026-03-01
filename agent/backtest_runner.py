@@ -12,6 +12,7 @@ import logging
 import os
 import subprocess
 import glob
+import time
 import zipfile
 from datetime import datetime
 from pathlib import Path
@@ -24,6 +25,17 @@ DEFAULT_FREQTRADE_DIR = os.environ.get("FREQTRADE_DIR", "/opt/freqtrade")
 DEFAULT_USER_DATA = os.environ.get("FREQTRADE_USER_DATA", "user_data")
 DEFAULT_RESULTS_DIR = os.path.join(DEFAULT_USER_DATA, "backtest_results")
 DEFAULT_FREQTRADE_BIN = os.environ.get("FREQTRADE_BIN", "freqtrade")
+
+# Transient error patterns that deserve a retry
+_TRANSIENT_PATTERNS = [
+    "ExchangeNotAvailable",
+    "TemporaryError",
+    "Could not load markets",
+    "Connection refused",
+    "ConnectionError",
+    "TimeoutError",
+    "Read timed out",
+]
 
 
 class BacktestRunner:
@@ -54,9 +66,15 @@ class BacktestRunner:
         strategy_file: Optional[str] = None,
         timerange: Optional[str] = None,
         config_override: Optional[str] = None,
+        max_retries: int = 3,
+        retry_delay: int = 30,
     ) -> dict:
         """
         Execute backtest and return parsed results.
+
+        Retries up to *max_retries* times (with *retry_delay* seconds between
+        attempts) when the failure is a transient exchange error (e.g. Binance
+        API temporarily unavailable).
 
         Returns dict with keys:
             - raw_results: full JSON from freqtrade
@@ -71,6 +89,38 @@ class BacktestRunner:
         cmd = self._build_command(cfg, tr)
         logger.info("Running backtest: %s", " ".join(cmd))
 
+        last_error = ""
+        for attempt in range(1, max_retries + 1):
+            result_dict = self._run_once(cmd)
+            if result_dict["success"]:
+                return result_dict
+
+            last_error = result_dict.get("error", "")
+            if attempt < max_retries and self._is_transient(last_error):
+                logger.warning(
+                    "Transient backtest error (attempt %d/%d), "
+                    "retrying in %ds: %s",
+                    attempt, max_retries, retry_delay,
+                    last_error[:200],
+                )
+                time.sleep(retry_delay)
+                continue
+
+            # Non-transient error or final attempt → return failure
+            return result_dict
+
+        return {
+            "success": False,
+            "error": f"All {max_retries} attempts failed. Last: {last_error}",
+            "raw_results": {},
+            "metrics": {},
+            "result_file": "",
+        }
+
+    # ------------------------------------------------------------------
+
+    def _run_once(self, cmd: list[str]) -> dict:
+        """Execute a single backtest attempt."""
         try:
             result = subprocess.run(
                 cmd,
@@ -153,6 +203,14 @@ class BacktestRunner:
                 "metrics": {},
                 "result_file": "",
             }
+
+    @staticmethod
+    def _is_transient(error_text: str) -> bool:
+        """Return True if the error looks like a transient exchange/network issue."""
+        for pattern in _TRANSIENT_PATTERNS:
+            if pattern in error_text:
+                return True
+        return False
 
     def run_hyperopt(
         self,

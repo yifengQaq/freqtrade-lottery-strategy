@@ -1,0 +1,1104 @@
+2026-03-01 13:02:15,230 [INFO] v2ex_agent: Starting CONTINUOUS iteration loop (Ctrl+C to stop gracefully)
+2026-03-01 13:02:15,230 [INFO] agent.orchestrator: ===== Epoch 1 · Round 1 =====
+2026-03-01 13:02:15,231 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-01 13:02:15,231 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-01 13:02:24,228 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-01 13:02:24,228 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-01 13:02:33,530 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-01 13:02:33,531 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-01 13:02:41,926 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-01 13:02:41,927 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-01 13:02:51,109 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-01 13:02:51,110 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-01 13:03:00,016 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-01 13:03:00,315 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-01 13:04:46,700 [INFO] agent.deepseek_client: DeepSeek response: 16181 tokens (attempt 1)
+2026-03-01 13:04:46,710 [INFO] agent.strategy_modifier: Strategy updated (round 1). Backup: results/strategy_versions/round_001_20260301_130446__参数优化__收紧入场条件_降低ADX阈值_调整ROI和stoploss_引入新家族因子OBV_TR.py
+2026-03-01 13:04:46,711 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-01 13:04:46,711 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:05:50,009 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250701-20251231
+2026-03-01 13:06:00,189 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:06:52,754 [INFO] agent.orchestrator: ===== Epoch 1 · Round 2 =====
+2026-03-01 13:06:52,758 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-01 13:06:52,758 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-01 13:07:01,105 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-01 13:07:01,105 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-01 13:07:08,515 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-01 13:07:08,515 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-01 13:07:16,297 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-01 13:07:16,297 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-01 13:07:24,756 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-01 13:07:24,756 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-01 13:07:32,262 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-01 13:07:32,624 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-01 13:09:17,585 [INFO] agent.deepseek_client: DeepSeek response: 16158 tokens (attempt 1)
+2026-03-01 13:09:17,588 [WARNING] agent.strategy_modifier: Auto-fixed LLM typos in strategy code: {'current_alance->current_balance': 1}
+2026-03-01 13:09:17,601 [INFO] agent.strategy_modifier: Strategy updated (round 2). Backup: results/strategy_versions/round_002_20260301_130917__参数优化__收紧入场条件_降低ADX阈值_调整RSI阈值_优化出场逻辑_增加止损保护.py
+2026-03-01 13:09:17,603 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-01 13:09:17,603 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:11:28,150 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250701-20251231
+2026-03-01 13:11:46,163 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:13:52,588 [INFO] agent.orchestrator: ===== Epoch 1 · Round 3 =====
+2026-03-01 13:13:52,592 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-01 13:13:52,592 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-01 13:14:05,586 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-01 13:14:05,586 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-01 13:14:19,299 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-01 13:14:19,299 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-01 13:14:32,984 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-01 13:14:32,984 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-01 13:14:48,818 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-01 13:14:48,818 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-01 13:15:04,188 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-01 13:15:04,733 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-01 13:16:48,563 [INFO] agent.deepseek_client: DeepSeek response: 16009 tokens (attempt 1)
+2026-03-01 13:16:48,580 [INFO] agent.strategy_modifier: Strategy updated (round 3). Backup: results/strategy_versions/round_003_20260301_131648__参数优化__调整入场条件阈值_降低ADX和RSI阈值以增加信号频率_收紧布林带突破条件以提高质量_.py
+2026-03-01 13:16:48,582 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-01 13:16:48,582 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:18:08,102 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250701-20251231
+2026-03-01 13:18:18,712 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:19:33,998 [INFO] agent.orchestrator: ===== Epoch 1 · Round 4 =====
+2026-03-01 13:19:34,001 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-01 13:19:34,001 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-01 13:19:43,798 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-01 13:19:43,798 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-01 13:19:55,027 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-01 13:19:55,027 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-01 13:20:02,739 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-01 13:20:02,739 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-01 13:20:12,189 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-01 13:20:12,189 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-01 13:20:21,815 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-01 13:20:22,148 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-01 13:21:54,458 [INFO] agent.deepseek_client: DeepSeek response: 15609 tokens (attempt 1)
+2026-03-01 13:21:54,462 [WARNING] agent.strategy_modifier: Auto-fixed LLM typos in strategy code: {'current_alance->current_balance': 1}
+2026-03-01 13:21:54,470 [INFO] agent.strategy_modifier: Strategy updated (round 4). Backup: results/strategy_versions/round_004_20260301_132154__入场重构__换用_STOCH_ATR_EXPANSION_ADX_组合替代旧的_MACD_BBAN.py
+2026-03-01 13:21:54,473 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-01 13:21:54,473 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:22:33,170 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250701-20251231
+2026-03-01 13:22:41,273 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:23:18,377 [INFO] agent.orchestrator: ===== Epoch 1 · Round 5 =====
+2026-03-01 13:23:18,378 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-01 13:23:18,378 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-01 13:23:25,057 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-01 13:23:25,058 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-01 13:23:31,641 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-01 13:23:31,642 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-01 13:23:37,661 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-01 13:23:37,662 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-01 13:23:44,191 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-01 13:23:44,192 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-01 13:23:50,876 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-01 13:23:51,134 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-01 13:25:36,362 [INFO] agent.deepseek_client: DeepSeek response: 15774 tokens (attempt 1)
+2026-03-01 13:25:36,365 [WARNING] agent.strategy_modifier: Auto-fixed LLM typos in strategy code: {'current_alance->current_balance': 1}
+2026-03-01 13:25:36,377 [INFO] agent.strategy_modifier: Strategy updated (round 5). Backup: results/strategy_versions/round_005_20260301_132536__入场重构__引入_BBANDS_BREAKOUT_因子_volatility_家族_替代部分逻辑_.py
+2026-03-01 13:25:36,386 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-01 13:25:36,386 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:26:06,771 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250701-20251231
+2026-03-01 13:26:30,487 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: s)(reload=True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 194, in wrapper
+    raise ex
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 179, in wrapper
+    return f(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 682, in _load_async_markets
+    markets = self.loop.run_until_complete(self._api_reload_markets(reload=reload))
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 673, in _api_reload_markets
+    raise TemporaryError(
+        f"Error in reload_markets due to {e.__class__.__name__}. Message: {e}"
+    ) from e
+freqtrade.exceptions.TemporaryError: Error in reload_markets due to ExchangeNotAvailable. Message: binance GET https://dapi.binance.com/dapi/v1/exchangeInfo
+2026-03-01 13:26:30,093 - freqtrade - ERROR - Could not load markets, therefore cannot start. Please investigate the above error for more details.
+
+2026-03-01 13:26:30,494 [INFO] agent.strategy_modifier: Rolled back to round 4: results/strategy_versions/round_004_20260301_132154__入场重构__换用_STOCH_ATR_EXPANSION_ADX_组合替代旧的_MACD_BBAN.py
+2026-03-01 13:26:30,494 [WARNING] agent.orchestrator: Overfitting detected — rolled back to round 4
+2026-03-01 13:26:30,495 [INFO] agent.orchestrator: ===== Epoch 1 · Round 6 =====
+2026-03-01 13:26:30,495 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-01 13:26:30,496 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-01 13:26:54,520 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: s)(reload=True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 194, in wrapper
+    raise ex
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 179, in wrapper
+    return f(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 682, in _load_async_markets
+    markets = self.loop.run_until_complete(self._api_reload_markets(reload=reload))
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 673, in _api_reload_markets
+    raise TemporaryError(
+        f"Error in reload_markets due to {e.__class__.__name__}. Message: {e}"
+    ) from e
+freqtrade.exceptions.TemporaryError: Error in reload_markets due to ExchangeNotAvailable. Message: binance GET https://dapi.binance.com/dapi/v1/exchangeInfo
+2026-03-01 13:26:54,086 - freqtrade - ERROR - Could not load markets, therefore cannot start. Please investigate the above error for more details.
+
+2026-03-01 13:26:54,521 [WARNING] agent.comparator: Window 'bull_2021' backtest failed: s)(reload=True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 194, in wrapper
+    raise ex
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 179, in wrapper
+    return f(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 682, in _load_async_markets
+    markets = self.loop.run_until_complete(self._api_reload_markets(reload=reload))
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 673, in _api_reload_markets
+    raise TemporaryError(
+        f"Error in reload_markets due to {e.__class__.__name__}. Message: {e}"
+    ) from e
+freqtrade.exceptions.TemporaryError: Error in reload_markets due to ExchangeNotAvailable. Message: binance GET https://dapi.binance.com/dapi/v1/exchangeInfo
+2026-03-01 13:26:54,086 - freqtrade - ERROR - Could not load markets, therefore cannot start. Please investigate the above error for more details.
+
+2026-03-01 13:26:54,521 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-01 13:26:54,521 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-01 13:27:18,376 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: s)(reload=True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 194, in wrapper
+    raise ex
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 179, in wrapper
+    return f(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 682, in _load_async_markets
+    markets = self.loop.run_until_complete(self._api_reload_markets(reload=reload))
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 673, in _api_reload_markets
+    raise TemporaryError(
+        f"Error in reload_markets due to {e.__class__.__name__}. Message: {e}"
+    ) from e
+freqtrade.exceptions.TemporaryError: Error in reload_markets due to ExchangeNotAvailable. Message: binance GET https://dapi.binance.com/dapi/v1/exchangeInfo
+2026-03-01 13:27:17,982 - freqtrade - ERROR - Could not load markets, therefore cannot start. Please investigate the above error for more details.
+
+2026-03-01 13:27:18,377 [WARNING] agent.comparator: Window 'bear_2022' backtest failed: s)(reload=True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 194, in wrapper
+    raise ex
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 179, in wrapper
+    return f(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 682, in _load_async_markets
+    markets = self.loop.run_until_complete(self._api_reload_markets(reload=reload))
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 673, in _api_reload_markets
+    raise TemporaryError(
+        f"Error in reload_markets due to {e.__class__.__name__}. Message: {e}"
+    ) from e
+freqtrade.exceptions.TemporaryError: Error in reload_markets due to ExchangeNotAvailable. Message: binance GET https://dapi.binance.com/dapi/v1/exchangeInfo
+2026-03-01 13:27:17,982 - freqtrade - ERROR - Could not load markets, therefore cannot start. Please investigate the above error for more details.
+
+2026-03-01 13:27:18,377 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-01 13:27:18,378 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-01 13:27:42,178 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: s)(reload=True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 194, in wrapper
+    raise ex
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 179, in wrapper
+    return f(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 682, in _load_async_markets
+    markets = self.loop.run_until_complete(self._api_reload_markets(reload=reload))
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 673, in _api_reload_markets
+    raise TemporaryError(
+        f"Error in reload_markets due to {e.__class__.__name__}. Message: {e}"
+    ) from e
+freqtrade.exceptions.TemporaryError: Error in reload_markets due to ExchangeNotAvailable. Message: binance GET https://dapi.binance.com/dapi/v1/exchangeInfo
+2026-03-01 13:27:41,795 - freqtrade - ERROR - Could not load markets, therefore cannot start. Please investigate the above error for more details.
+
+2026-03-01 13:27:42,179 [WARNING] agent.comparator: Window 'sideways_2023' backtest failed: s)(reload=True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 194, in wrapper
+    raise ex
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 179, in wrapper
+    return f(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 682, in _load_async_markets
+    markets = self.loop.run_until_complete(self._api_reload_markets(reload=reload))
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 673, in _api_reload_markets
+    raise TemporaryError(
+        f"Error in reload_markets due to {e.__class__.__name__}. Message: {e}"
+    ) from e
+freqtrade.exceptions.TemporaryError: Error in reload_markets due to ExchangeNotAvailable. Message: binance GET https://dapi.binance.com/dapi/v1/exchangeInfo
+2026-03-01 13:27:41,795 - freqtrade - ERROR - Could not load markets, therefore cannot start. Please investigate the above error for more details.
+
+2026-03-01 13:27:42,179 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-01 13:27:42,179 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-01 13:28:06,161 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: s)(reload=True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 194, in wrapper
+    raise ex
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 179, in wrapper
+    return f(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 682, in _load_async_markets
+    markets = self.loop.run_until_complete(self._api_reload_markets(reload=reload))
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 673, in _api_reload_markets
+    raise TemporaryError(
+        f"Error in reload_markets due to {e.__class__.__name__}. Message: {e}"
+    ) from e
+freqtrade.exceptions.TemporaryError: Error in reload_markets due to ExchangeNotAvailable. Message: binance GET https://dapi.binance.com/dapi/v1/exchangeInfo
+2026-03-01 13:28:05,769 - freqtrade - ERROR - Could not load markets, therefore cannot start. Please investigate the above error for more details.
+
+2026-03-01 13:28:06,161 [WARNING] agent.comparator: Window 'recovery_2024' backtest failed: s)(reload=True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 194, in wrapper
+    raise ex
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 179, in wrapper
+    return f(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 682, in _load_async_markets
+    markets = self.loop.run_until_complete(self._api_reload_markets(reload=reload))
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 673, in _api_reload_markets
+    raise TemporaryError(
+        f"Error in reload_markets due to {e.__class__.__name__}. Message: {e}"
+    ) from e
+freqtrade.exceptions.TemporaryError: Error in reload_markets due to ExchangeNotAvailable. Message: binance GET https://dapi.binance.com/dapi/v1/exchangeInfo
+2026-03-01 13:28:05,769 - freqtrade - ERROR - Could not load markets, therefore cannot start. Please investigate the above error for more details.
+
+2026-03-01 13:28:06,161 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-01 13:28:06,161 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-01 13:28:30,010 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: s)(reload=True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 194, in wrapper
+    raise ex
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 179, in wrapper
+    return f(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 682, in _load_async_markets
+    markets = self.loop.run_until_complete(self._api_reload_markets(reload=reload))
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 673, in _api_reload_markets
+    raise TemporaryError(
+        f"Error in reload_markets due to {e.__class__.__name__}. Message: {e}"
+    ) from e
+freqtrade.exceptions.TemporaryError: Error in reload_markets due to ExchangeNotAvailable. Message: binance GET https://dapi.binance.com/dapi/v1/exchangeInfo
+2026-03-01 13:28:29,634 - freqtrade - ERROR - Could not load markets, therefore cannot start. Please investigate the above error for more details.
+
+2026-03-01 13:28:30,011 [WARNING] agent.comparator: Window 'recent_2025' backtest failed: s)(reload=True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 191, in wrapper
+    return wrapper(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 194, in wrapper
+    raise ex
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/common.py", line 179, in wrapper
+    return f(*args, **kwargs)
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 682, in _load_async_markets
+    markets = self.loop.run_until_complete(self._api_reload_markets(reload=reload))
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/lib/python3.13/site-packages/freqtrade/exchange/exchange.py", line 673, in _api_reload_markets
+    raise TemporaryError(
+        f"Error in reload_markets due to {e.__class__.__name__}. Message: {e}"
+    ) from e
+freqtrade.exceptions.TemporaryError: Error in reload_markets due to ExchangeNotAvailable. Message: binance GET https://dapi.binance.com/dapi/v1/exchangeInfo
+2026-03-01 13:28:29,634 - freqtrade - ERROR - Could not load markets, therefore cannot start. Please investigate the above error for more details.
+
+2026-03-01 13:28:30,014 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-01 13:28:30,269 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-01 13:30:15,786 [INFO] agent.deepseek_client: DeepSeek response: 11303 tokens (attempt 1)
+2026-03-01 13:30:15,807 [INFO] agent.strategy_modifier: Strategy updated (round 6). Backup: results/strategy_versions/round_006_20260301_133015__参数优化__收紧入场条件_降低ADX和RSI阈值_增加ATR扩张过滤_调整出场ROI和止损.py
+2026-03-01 13:30:15,808 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-01 13:30:15,808 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:31:11,999 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250701-20251231
+2026-03-01 13:31:20,599 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:32:14,893 [INFO] agent.orchestrator: ===== Epoch 1 · Round 7 =====
+2026-03-01 13:32:14,896 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-01 13:32:14,896 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-01 13:32:23,755 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-01 13:32:23,756 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-01 13:32:32,185 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-01 13:32:32,186 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-01 13:32:38,692 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-01 13:32:38,692 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-01 13:32:46,409 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-01 13:32:46,409 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-01 13:32:53,984 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-01 13:32:54,265 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-01 13:34:32,335 [INFO] agent.deepseek_client: DeepSeek response: 15817 tokens (attempt 1)
+2026-03-01 13:34:32,352 [INFO] agent.strategy_modifier: Strategy updated (round 7). Backup: results/strategy_versions/round_007_20260301_133432__入场重构__换用_STOCH_CCI_ATR_EXPANSION_ADX_组合替代旧的_MACD_.py
+2026-03-01 13:34:32,354 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-01 13:34:32,355 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:35:33,619 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250701-20251231
+2026-03-01 13:35:45,351 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:36:40,670 [INFO] agent.orchestrator: ===== Epoch 1 · Round 8 =====
+2026-03-01 13:36:40,674 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-01 13:36:40,674 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-01 13:36:49,121 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-01 13:36:49,121 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-01 13:36:59,009 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-01 13:36:59,010 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-01 13:37:07,455 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-01 13:37:07,455 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-01 13:37:17,204 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-01 13:37:17,204 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-01 13:37:26,936 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-01 13:37:27,347 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-01 13:39:16,584 [INFO] agent.deepseek_client: DeepSeek response: 15915 tokens (attempt 1)
+2026-03-01 13:39:16,603 [INFO] agent.strategy_modifier: Strategy updated (round 8). Backup: results/strategy_versions/round_008_20260301_133916__入场优化__保留_STOCH_CCI_ADX_ATR_组合_新增_BBANDS_REVERT_作为.py
+2026-03-01 13:39:16,606 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-01 13:39:16,606 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:40:29,063 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250701-20251231
+2026-03-01 13:40:38,948 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:41:39,763 [INFO] agent.orchestrator: ===== Epoch 1 · Round 9 =====
+2026-03-01 13:41:39,764 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-01 13:41:39,764 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-01 13:41:47,269 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-01 13:41:47,270 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-01 13:41:55,601 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-01 13:41:55,601 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-01 13:42:02,109 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-01 13:42:02,110 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-01 13:42:10,262 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-01 13:42:10,262 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-01 13:42:19,011 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-01 13:42:19,280 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-01 13:44:01,224 [INFO] agent.deepseek_client: DeepSeek response: 15810 tokens (attempt 1)
+2026-03-01 13:44:01,233 [WARNING] agent.strategy_modifier: Auto-fixed LLM typos in strategy code: {'current_alance->current_balance': 2}
+2026-03-01 13:44:01,245 [INFO] agent.strategy_modifier: Strategy updated (round 9). Backup: results/strategy_versions/round_009_20260301_134401__入场重构__引入_MACD_CROSS_作为新家族因子_trend__替换_ATR_EXPANSI.py
+2026-03-01 13:44:01,246 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-01 13:44:01,246 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:44:01,273 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:44:01,273 [INFO] agent.orchestrator: ===== Epoch 1 · Round 10 =====
+2026-03-01 13:44:01,274 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-01 13:44:01,274 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-01 13:44:01,293 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:44:01,294 [WARNING] agent.comparator: Window 'bull_2021' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:44:01,294 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-01 13:44:01,294 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-01 13:44:01,313 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:44:01,313 [WARNING] agent.comparator: Window 'bear_2022' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:44:01,313 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-01 13:44:01,313 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-01 13:44:01,333 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:44:01,333 [WARNING] agent.comparator: Window 'sideways_2023' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:44:01,333 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-01 13:44:01,333 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-01 13:44:01,353 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:44:01,353 [WARNING] agent.comparator: Window 'recovery_2024' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:44:01,353 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-01 13:44:01,353 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-01 13:44:01,372 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:44:01,372 [WARNING] agent.comparator: Window 'recent_2025' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:44:01,373 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-01 13:44:01,501 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-01 13:45:33,893 [INFO] agent.deepseek_client: DeepSeek response: 10369 tokens (attempt 1)
+2026-03-01 13:45:33,903 [INFO] agent.strategy_modifier: Strategy updated (round 10). Backup: results/strategy_versions/round_010_20260301_134533__入场重构__换用_BBANDS_RSI_ADX_组合替代旧的_STOCH_CCI_MACD_引入_.py
+2026-03-01 13:45:33,904 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-01 13:45:33,904 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:45:33,935 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:45:33,935 [INFO] agent.orchestrator: ===== Epoch 1 · Round 11 =====
+2026-03-01 13:45:33,935 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-01 13:45:33,935 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-01 13:45:33,958 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:45:33,959 [WARNING] agent.comparator: Window 'bull_2021' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:45:33,959 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-01 13:45:33,959 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-01 13:45:33,980 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:45:33,980 [WARNING] agent.comparator: Window 'bear_2022' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:45:33,981 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-01 13:45:33,981 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-01 13:45:34,002 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:45:34,002 [WARNING] agent.comparator: Window 'sideways_2023' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:45:34,002 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-01 13:45:34,002 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-01 13:45:34,024 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:45:34,024 [WARNING] agent.comparator: Window 'recovery_2024' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:45:34,024 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-01 13:45:34,024 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-01 13:45:34,046 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:45:34,046 [WARNING] agent.comparator: Window 'recent_2025' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:45:34,047 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-01 13:45:34,161 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-01 13:47:06,329 [INFO] agent.deepseek_client: DeepSeek response: 10077 tokens (attempt 1)
+2026-03-01 13:47:06,345 [INFO] agent.strategy_modifier: Strategy updated (round 11). Backup: results/strategy_versions/round_011_20260301_134706__入场优化__引入_VOLATILITY_家族新因子_ATR_EXPANSION_增强突破确认_调整.py
+2026-03-01 13:47:06,347 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-01 13:47:06,347 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:47:06,422 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:47:06,422 [INFO] agent.orchestrator: Epoch 2 reset: Last 3 consecutive rounds failed (stale_rounds_limit=3) — rolling back to best round 5 (score=10.00)
+2026-03-01 13:47:06,427 [INFO] agent.strategy_modifier: Rolled back to round 5: results/strategy_versions/round_005_20260301_132536__入场重构__引入_BBANDS_BREAKOUT_因子_volatility_家族_替代部分逻辑_.py
+2026-03-01 13:47:06,428 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-01 13:47:06,434 [INFO] agent.orchestrator: Iteration log saved to results/iteration_log.json
+2026-03-01 13:47:06,435 [INFO] agent.orchestrator: ===== Epoch 2 · Round 12 =====
+2026-03-01 13:47:06,435 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-01 13:47:06,435 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-01 13:47:06,471 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:47:06,471 [WARNING] agent.comparator: Window 'bull_2021' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:47:06,471 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-01 13:47:06,471 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-01 13:47:06,503 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:47:06,504 [WARNING] agent.comparator: Window 'bear_2022' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:47:06,504 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-01 13:47:06,504 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-01 13:47:06,549 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:47:06,550 [WARNING] agent.comparator: Window 'sideways_2023' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:47:06,550 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-01 13:47:06,550 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-01 13:47:06,587 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:47:06,587 [WARNING] agent.comparator: Window 'recovery_2024' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:47:06,587 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-01 13:47:06,587 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-01 13:47:06,619 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:47:06,619 [WARNING] agent.comparator: Window 'recent_2025' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:47:06,621 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-01 13:47:06,737 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-01 13:48:45,169 [INFO] agent.deepseek_client: DeepSeek response: 10719 tokens (attempt 1)
+2026-03-01 13:48:45,186 [INFO] agent.strategy_modifier: Strategy updated (round 12). Backup: results/strategy_versions/round_012_20260301_134845__入场重构__保留STOCH_ATR_ADX动量突破框架_新增BBANDS_REVERT均值回归因子.py
+2026-03-01 13:48:45,188 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-01 13:48:45,188 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:48:45,276 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:48:45,276 [INFO] agent.orchestrator: Epoch 3 reset: Last 4 consecutive rounds failed (stale_rounds_limit=3) — rolling back to best round 5 (score=10.00)
+2026-03-01 13:48:45,278 [INFO] agent.strategy_modifier: Rolled back to round 5: results/strategy_versions/round_005_20260301_132536__入场重构__引入_BBANDS_BREAKOUT_因子_volatility_家族_替代部分逻辑_.py
+2026-03-01 13:48:45,278 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-01 13:48:45,283 [INFO] agent.orchestrator: Iteration log saved to results/iteration_log.json
+2026-03-01 13:48:45,283 [INFO] agent.orchestrator: ===== Epoch 3 · Round 13 =====
+2026-03-01 13:48:45,283 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-01 13:48:45,283 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-01 13:48:45,303 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:48:45,303 [WARNING] agent.comparator: Window 'bull_2021' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:48:45,303 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-01 13:48:45,303 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-01 13:48:45,323 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:48:45,323 [WARNING] agent.comparator: Window 'bear_2022' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:48:45,323 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-01 13:48:45,323 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-01 13:48:45,342 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:48:45,342 [WARNING] agent.comparator: Window 'sideways_2023' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:48:45,342 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-01 13:48:45,342 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-01 13:48:45,362 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:48:45,362 [WARNING] agent.comparator: Window 'recovery_2024' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:48:45,362 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-01 13:48:45,362 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-01 13:48:45,381 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:48:45,381 [WARNING] agent.comparator: Window 'recent_2025' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:48:45,382 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-01 13:48:45,611 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-01 13:50:21,331 [INFO] agent.deepseek_client: DeepSeek response: 10634 tokens (attempt 1)
+2026-03-01 13:50:21,348 [INFO] agent.strategy_modifier: Strategy updated (round 13). Backup: results/strategy_versions/round_013_20260301_135021__入场重构_参数调整__保留STOCH_ATR_ADX组合_新增BBANDS_BREAKOUT因子_.py
+2026-03-01 13:50:21,349 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-01 13:50:21,349 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:50:21,386 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:50:21,386 [INFO] agent.orchestrator: Epoch 4 reset: Last 5 consecutive rounds failed (stale_rounds_limit=3) — rolling back to best round 5 (score=10.00)
+2026-03-01 13:50:21,387 [INFO] agent.strategy_modifier: Rolled back to round 5: results/strategy_versions/round_005_20260301_132536__入场重构__引入_BBANDS_BREAKOUT_因子_volatility_家族_替代部分逻辑_.py
+2026-03-01 13:50:21,388 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-01 13:50:21,393 [INFO] agent.orchestrator: Iteration log saved to results/iteration_log.json
+2026-03-01 13:50:21,393 [INFO] agent.orchestrator: ===== Epoch 4 · Round 14 =====
+2026-03-01 13:50:21,393 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-01 13:50:21,393 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-01 13:50:21,413 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:50:21,413 [WARNING] agent.comparator: Window 'bull_2021' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:50:21,413 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-01 13:50:21,413 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-01 13:50:21,433 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:50:21,433 [WARNING] agent.comparator: Window 'bear_2022' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:50:21,433 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-01 13:50:21,433 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-01 13:50:21,452 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:50:21,453 [WARNING] agent.comparator: Window 'sideways_2023' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:50:21,453 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-01 13:50:21,453 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-01 13:50:21,472 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:50:21,472 [WARNING] agent.comparator: Window 'recovery_2024' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:50:21,472 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-01 13:50:21,472 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-01 13:50:21,492 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:50:21,492 [WARNING] agent.comparator: Window 'recent_2025' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:50:21,493 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-01 13:50:21,710 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-01 13:51:47,961 [INFO] agent.deepseek_client: DeepSeek response: 10347 tokens (attempt 1)
+2026-03-01 13:51:47,976 [INFO] agent.strategy_modifier: Strategy updated (round 14). Backup: results/strategy_versions/round_014_20260301_135147__入场重构__引入新家族因子BBANDS_BREAKOUT_替换STOCH超卖_超买逻辑为布林带突破.py
+2026-03-01 13:51:47,977 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-01 13:51:47,977 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-01 13:51:48,006 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:51:48,006 [INFO] agent.orchestrator: Epoch 5 reset: Last 6 consecutive rounds failed (stale_rounds_limit=3) — rolling back to best round 5 (score=10.00)
+2026-03-01 13:51:48,007 [INFO] agent.strategy_modifier: Rolled back to round 5: results/strategy_versions/round_005_20260301_132536__入场重构__引入_BBANDS_BREAKOUT_因子_volatility_家族_替代部分逻辑_.py
+2026-03-01 13:51:48,007 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-01 13:51:48,013 [INFO] agent.orchestrator: Iteration log saved to results/iteration_log.json
+2026-03-01 13:51:48,013 [INFO] agent.orchestrator: ===== Epoch 5 · Round 15 =====
+2026-03-01 13:51:48,013 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-01 13:51:48,013 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-01 13:51:48,036 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:51:48,037 [WARNING] agent.comparator: Window 'bull_2021' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:51:48,037 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-01 13:51:48,037 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-01 13:51:48,060 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:51:48,060 [WARNING] agent.comparator: Window 'bear_2022' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:51:48,060 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-01 13:51:48,060 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-01 13:51:48,083 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:51:48,084 [WARNING] agent.comparator: Window 'sideways_2023' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:51:48,084 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-01 13:51:48,084 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-01 13:51:48,105 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:51:48,105 [WARNING] agent.comparator: Window 'recovery_2024' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:51:48,105 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-01 13:51:48,105 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-01 13:51:48,127 [ERROR] agent.backtest_runner: Backtest failed:
+STDOUT: 
+STDERR: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:51:48,127 [WARNING] agent.comparator: Window 'recent_2025' backtest failed: Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000002075e4f80 (most recent call first):
+  <no Python frame>
+
+2026-03-01 13:51:48,127 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-01 13:51:48,237 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-01 13:51:52,414 [INFO] v2ex_agent: Ctrl+C received — saving state and exiting gracefully...
+
+============================================================
+Completed 0 rounds
+============================================================
