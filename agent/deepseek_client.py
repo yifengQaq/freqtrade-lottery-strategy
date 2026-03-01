@@ -15,6 +15,8 @@ from typing import Any, Optional
 
 import httpx
 
+from agent.dimension_templates import DimensionDiagnosticEngine, DIMENSION_TEMPLATES
+
 logger = logging.getLogger(__name__)
 
 # DeepSeek API is OpenAI-compatible
@@ -168,10 +170,13 @@ class DeepSeekClient:
         comparison_matrix: dict,
         target_gap: dict,
         current_code: str,
+        previous_changes: list[dict] | None = None,
+        epoch_round: int = 4,
     ) -> dict:
         """
         Generate parameter adjustment suggestions informed by the
-        multi-window comparison matrix and the target gap vector.
+        multi-window comparison matrix, the target gap vector,
+        and the dimension diagnostic engine.
 
         Returns::
 
@@ -183,15 +188,63 @@ class DeepSeekClient:
                 "next_action": str,
             }
         """
+        engine = DimensionDiagnosticEngine()
+        prev = previous_changes or []
+
+        # Extract metrics from target_gap for diagnosis
+        metrics_for_diagnosis = {}
+        if isinstance(target_gap, dict):
+            # target_gap has metric names as keys with gap values
+            # Try to derive absolute metrics from comparison_matrix
+            if isinstance(comparison_matrix, dict):
+                for window_data in comparison_matrix.values():
+                    if isinstance(window_data, dict):
+                        metrics_for_diagnosis.update(window_data)
+                        break
+            # Fallback: use target_gap directly
+            if not metrics_for_diagnosis:
+                metrics_for_diagnosis = target_gap
+
+        focus = engine.select_focus_dimension(
+            metrics=metrics_for_diagnosis,
+            previous_changes=prev,
+            epoch_round=epoch_round,
+        )
+        dim_key = focus["dimension"]
+
+        # Build dimension stats
+        dim_stats = engine.build_dimension_stats(prev)
+        stats_lines = "\n".join(
+            f"  - {engine._dim_name_cn(d)}: {count}次"
+            for d, count in sorted(dim_stats.items(), key=lambda x: -x[1])
+        )
+
+        # Get dimension template
+        template_text = engine.get_dimension_template(dim_key)
+        if "{FACTOR_CATALOG}" in template_text:
+            try:
+                from agent.factor_templates import FactorTemplateLibrary
+                catalog_text = FactorTemplateLibrary().get_catalog_text()
+            except Exception:
+                catalog_text = "(因子目录加载失败)"
+            template_text = template_text.replace("{FACTOR_CATALOG}", catalog_text)
+
         user_msg = (
             "## Multi-Window Comparison Matrix\n"
             f"```json\n{json.dumps(comparison_matrix, indent=2, ensure_ascii=False)}\n```\n\n"
             "## Target Gap Vector\n"
             f"```json\n{json.dumps(target_gap, indent=2, ensure_ascii=False)}\n```\n\n"
             f"## Current Strategy Code\n```python\n{current_code}\n```\n\n"
-            "Based on the comparison matrix and target gap, suggest parameter "
-            "adjustments to close the gap.  Return JSON with keys: "
-            '"changes_made", "rationale", "code_patch", "config_patch", "next_action".'
+            f"## 维度探索统计\n{stats_lines}\n\n"
+            f"## 🔍 诊断结论\n{focus['reason']}\n\n"
+            f"## 🎯 本轮焦点维度: {engine._dim_name_cn(dim_key)}\n"
+            f"**你本轮必须聚焦修改「{engine._dim_name_cn(dim_key)}」相关参数。**\n"
+            f'⚠️ 硬约束: "focus_dimension" 必须填 "{dim_key}"\n\n'
+            f"## {engine._dim_name_cn(dim_key)} 详细指导\n{template_text}\n\n"
+            "Based on the comparison matrix, target gap, and dimension guidance, "
+            "suggest adjustments to close the gap.  Return JSON with keys: "
+            '"focus_dimension", "dimension_changes", "changes_made", "rationale", '
+            '"code_patch", "config_patch", "next_action".'
         )
 
         raw = self.chat(
@@ -212,6 +265,8 @@ class DeepSeekClient:
         result.setdefault("rationale", "")
         result.setdefault("config_patch", {})
         result.setdefault("next_action", "continue")
+        result.setdefault("focus_dimension", dim_key)
+        result.setdefault("dimension_changes", [])
         return result
 
     def generate_strategy_patch(
@@ -325,56 +380,45 @@ class DeepSeekClient:
         iteration_round: int,
         previous_changes: list[dict],
     ) -> str:
-        """Build the per-round user prompt."""
+        """Build the per-round user prompt with dimension-aware guidance."""
+        engine = DimensionDiagnosticEngine()
+
+        # 1. Select focus dimension via diagnosis
+        metrics = backtest_results if isinstance(backtest_results, dict) else {}
+        focus = engine.select_focus_dimension(
+            metrics=metrics,
+            previous_changes=previous_changes,
+            epoch_round=iteration_round,
+        )
+        dim_key = focus["dimension"]
+
+        # 2. Build dimension exploration stats
+        dim_stats = engine.build_dimension_stats(previous_changes)
+        stats_lines = "\n".join(
+            f"  - {engine._dim_name_cn(d)}: {count}次"
+            for d, count in sorted(dim_stats.items(), key=lambda x: -x[1])
+        )
+
+        # 3. Get dimension template and inject factor catalog if needed
+        template_text = engine.get_dimension_template(dim_key)
+        if "{FACTOR_CATALOG}" in template_text:
+            try:
+                from agent.factor_templates import FactorTemplateLibrary
+                catalog_text = FactorTemplateLibrary().get_catalog_text()
+            except Exception:
+                catalog_text = "(因子目录加载失败)"
+            template_text = template_text.replace("{FACTOR_CATALOG}", catalog_text)
+
+        # 4. Build recent changes summary
         changes_summary = ""
         if previous_changes:
-            for c in previous_changes[-3:]:  # Only last 3 rounds for context
+            for c in previous_changes[-5:]:  # Last 5 rounds for context
+                dim_label = c.get("focus_dimension", "entry_signal")
                 changes_summary += (
-                    f"  Round {c.get('round', '?')}: "
+                    f"  Round {c.get('round', '?')} [{engine._dim_name_cn(dim_label)}]: "
                     f"{c.get('changes_made', 'N/A')} → "
                     f"Score: {c.get('score', 'N/A')}\n"
                 )
-
-        # Build tried-factors section from history
-        tried_factors_section = ""
-        if previous_changes:
-            tried_names = set()
-            for c in previous_changes:
-                # Extract factors_used if present in changes_made
-                cm = c.get("changes_made", "")
-                # Also look for explicit factor names in brackets
-                import re as _re
-                for name in _re.findall(r"[A-Z_]{2,}(?:_CROSS|_BREAKOUT)?", cm):
-                    tried_names.add(name)
-
-            # Map factor names to families for hard constraint tracking
-            from agent.factor_templates import FactorTemplateLibrary
-            _lib = FactorTemplateLibrary()
-            _all_factors = {f["name"]: f["family"] for f in _lib.get_all()}
-            _all_families = sorted(set(f["family"] for f in _lib.get_all()))
-            tried_families = set()
-            for name in tried_names:
-                if name in _all_factors:
-                    tried_families.add(_all_factors[name])
-            remaining_families = sorted(set(_all_families) - tried_families)
-
-            tried_section_parts = []
-            if tried_names:
-                tried_section_parts.append(
-                    f"## 已尝试过的因子（避免重复）\n"
-                    f"{', '.join(sorted(tried_names))}"
-                )
-            tried_section_parts.append(
-                f"\n## 已覆盖的因子家族\n"
-                f"已覆盖: {', '.join(sorted(tried_families)) if tried_families else '无'}\n"
-                f"**未覆盖: {', '.join(remaining_families) if remaining_families else '全部已覆盖'}**"
-            )
-            tried_section_parts.append(
-                f"\n## ⚠️ 硬约束提醒\n"
-                f"本轮你 **必须** 从未覆盖家族（{', '.join(remaining_families) if remaining_families else '任选'}）中选至少 1 个因子。"
-                f"\n如果所有家族已覆盖，则从得分最低轮次的家族中选一个未试过的因子。"
-            )
-            tried_factors_section = "\n".join(tried_section_parts)
 
         return f"""
 ## 当前迭代轮次: {iteration_round}
@@ -391,36 +435,50 @@ class DeepSeekClient:
 
 ## 历史变更摘要
 {changes_summary if changes_summary else "这是第一轮迭代，无历史记录。"}
-{tried_factors_section}
-## 你的任务（按顺序执行）
 
-### 第一步：需求诊断
-- 如果上轮 **0 笔交易**：入场条件有逻辑矛盾或条件过严，必须重构入场逻辑
-- 如果上轮有交易但 **胜率/盈亏比差**：调整出场参数或换更适合当前市况的因子组合
-- 如果上轮表现尚可：微调参数或尝试新因子组合看能否进一步提升
+## 维度探索统计
+{stats_lines}
 
-### 第二步：从因子目录中选 2-4 个因子
-- 选逻辑一致的因子（趋势确认+动量确认，或均值回归+超买超卖）
-- ⚠️ **硬约束：必须引入至少 1 个来自新家族的因子**（参考上方「未覆盖家族」列表）
-- 参考"已尝试因子"列表，避免完全重复
-- 用 AND 组合条件，但不超过 3 个核心条件
+## 🔍 诊断结论
+{focus["reason"]}
 
-### 第三步：实施修改
-- 在 populate_indicators 中计算所选因子指标
-- 在 populate_entry_trend 中构建入场条件
-- 根据需要调整 stoploss/ROI/trailing/leverage
+## 🎯 本轮焦点维度: {engine._dim_name_cn(dim_key)}
+**你本轮必须聚焦修改「{engine._dim_name_cn(dim_key)}」相关参数。**
+可以同时微调其他维度，但主要改动必须在焦点维度上。
+
+⚠️ 硬约束: 你的 "focus_dimension" 字段必须填 "{dim_key}"
+
+## {engine._dim_name_cn(dim_key)} 详细指导
+{template_text}
+
+## 你的任务
+
+### 第一步：理解诊断
+- 仔细阅读上方诊断结论，理解为什么选择这个维度
+- 查看回测结果中的具体数字
+
+### 第二步：在焦点维度内做出修改
+- 根据「{engine._dim_name_cn(dim_key)}」的详细指导，进行针对性修改
+- 确保修改是有意义的、有数据依据的
+
+### 第三步：确保代码正确
+- code_patch 必须是完整可运行的 .py 文件
+- 所有 indicator 计算在 populate_indicators 中
+- talib 多列指标用 DataFrame 列名，禁止元组解包
 
 ⚠️ 关键约束:
-- timeframe 只能是 "15m" 或 "1h"，严禁改为其他值
+- timeframe 只能是 "15m" 或 "1h"
 - stake_amount 必须保持 "unlimited"
 - code_patch 必须是完整可运行的 .py 文件
 
 请直接返回纯 JSON（不要 markdown fence），格式:
 {{
     "round": {iteration_round},
+    "focus_dimension": "{dim_key}",
+    "dimension_changes": ["具体修改项1", "具体修改项2"],
     "factors_used": ["因子名1", "因子名2"],
-    "changes_made": "[入场重构] 简述修改内容",
-    "rationale": "修改理由（基于数据和因子选择逻辑）",
+    "changes_made": "[{engine._dim_name_cn(dim_key)}] 简述修改内容",
+    "rationale": "修改理由（基于诊断和数据）",
     "code_patch": "完整的修改后策略代码（Python）",
     "config_patch": {{}},
     "next_action": "下一步计划"

@@ -351,6 +351,8 @@ class Orchestrator:
                     comparison_matrix=comparison_matrix,
                     target_gap=target_gap,
                     current_code=current_code,
+                    previous_changes=previous_changes,
+                    epoch_round=round_num,
                 )
             else:
                 llm_result = self.deepseek_client.generate_strategy_patch(
@@ -366,6 +368,7 @@ class Orchestrator:
 
         base_record["changes_made"] = llm_result.get("changes_made", "")
         base_record["rationale"] = llm_result.get("rationale", "")
+        base_record["focus_dimension"] = llm_result.get("focus_dimension", "")
         new_code = llm_result.get("code_patch", "")
 
         # 4. Apply patch via StrategyModifier
