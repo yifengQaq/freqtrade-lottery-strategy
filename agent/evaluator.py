@@ -18,20 +18,27 @@ logger = logging.getLogger(__name__)
 @dataclass
 class PassCriteria:
     """Configurable pass/fail thresholds from iteration rules."""
-    weekly_target_hit_rate_min: float = 0.25
-    max_drawdown_pct_max: float = 95.0
+    weekly_target_hit_rate_min: float = 0.10
+    max_drawdown_pct_max: float = 80.0
     total_trades_min: int = 50
     stake_limit_hit_count_max: int = 0
     monthly_net_profit_avg_min: float = 0.0
+    total_profit_pct_min: float = -30.0   # reject strategies losing > 30%
 
 
 @dataclass
 class ScoreWeights:
-    """Weights for composite score calculation."""
-    monthly_avg_profit_w: float = 0.4
-    weekly_target_hit_rate_w: float = 0.3
-    max_monthly_loss_w: float = 0.2
-    trade_efficiency_w: float = 0.1
+    """Weights for composite score calculation.
+
+    v2: profit-centric weights — total_profit_pct is the primary driver so
+    that the optimisation loop selects strategies that actually make money.
+    """
+    total_profit_w: float = 0.35          # total profit % — primary driver
+    sharpe_w: float = 0.20                # risk-adjusted returns
+    win_rate_w: float = 0.15              # consistency
+    max_drawdown_w: float = 0.15          # drawdown penalty
+    monthly_avg_profit_w: float = 0.10    # monthly profit consistency
+    trade_efficiency_w: float = 0.05      # duration efficiency
 
 
 @dataclass
@@ -177,41 +184,57 @@ class Evaluator:
                 f"<= {self.criteria.monthly_net_profit_avg_min}"
             )
 
+        # Total profit floor — reject severely losing strategies
+        total_profit = m.get("total_profit_pct", 0)
+        if total_profit < self.criteria.total_profit_pct_min:
+            failures.append(
+                f"total_profit_pct={total_profit:.1f}% "
+                f"< {self.criteria.total_profit_pct_min}%"
+            )
+
         return failures
 
     def _calculate_score(self, m: dict) -> tuple[float, dict]:
         """
-        Calculate composite score.
+        Calculate composite score (v2 — profit-centric).
 
         Score =
-            monthly_avg_profit * 0.4
-          + weekly_target_hit_rate * 100 * 0.3
-          - max_monthly_loss * 0.2
-          + (1 / avg_trade_duration_hours) * 0.1
+            total_profit_pct * 0.35           ← primary profit driver
+          + sharpe_ratio * 10 * 0.20          ← risk-adjusted
+          + win_rate * 100 * 0.15             ← consistency
+          - max_drawdown_pct * 0.15           ← drawdown penalty
+          + monthly_net_profit_avg * 0.10     ← monthly consistency
+          + (1 / duration) * 100 * 0.05       ← efficiency
         """
         w = self.weights
 
+        total_profit = m.get("total_profit_pct", 0)
+        sharpe = m.get("sharpe_ratio", 0)
+        win_rate = m.get("win_rate", 0)
+        mdd = m.get("max_drawdown_pct", 0)
         monthly_profit = m.get("monthly_net_profit_avg", 0)
-        wtr = m.get("weekly_target_hit_rate", 0)
-        max_loss = m.get("max_monthly_loss", 0)
         avg_duration = m.get("avg_trade_duration_hours", 24)
 
         # Protect against division by zero
         if avg_duration <= 0:
             avg_duration = 24
 
-        s1 = monthly_profit * w.monthly_avg_profit_w
-        s2 = wtr * 100 * w.weekly_target_hit_rate_w
-        s3 = -max_loss * w.max_monthly_loss_w
-        s4 = (1 / avg_duration) * w.trade_efficiency_w * 100  # Scale for readability
+        s1 = total_profit * w.total_profit_w
+        s2 = sharpe * 10 * w.sharpe_w
+        s3 = win_rate * 100 * w.win_rate_w
+        s4 = -mdd * w.max_drawdown_w
+        s5 = monthly_profit * w.monthly_avg_profit_w
+        s6 = (1 / avg_duration) * w.trade_efficiency_w * 100
 
-        total = s1 + s2 + s3 + s4
+        total = s1 + s2 + s3 + s4 + s5 + s6
 
         breakdown = {
-            "monthly_profit_component": s1,
-            "weekly_hit_rate_component": s2,
-            "max_loss_penalty": s3,
-            "trade_efficiency_component": s4,
+            "total_profit_component": s1,
+            "sharpe_component": s2,
+            "win_rate_component": s3,
+            "drawdown_penalty": s4,
+            "monthly_profit_component": s5,
+            "trade_efficiency_component": s6,
         }
 
         return round(total, 2), breakdown
@@ -226,7 +249,10 @@ class Evaluator:
         recs = []
 
         trades = m.get("total_trades", 0)
-        wtr = m.get("weekly_target_hit_rate", 0)
+        total_profit = m.get("total_profit_pct", 0)
+        win_rate = m.get("win_rate", 0)
+        mdd = m.get("max_drawdown_pct", 0)
+        sharpe = m.get("sharpe_ratio", 0)
         avg_profit = m.get("avg_profit_per_trade_pct", 0)
         duration = m.get("avg_trade_duration_hours", 0)
 
@@ -235,14 +261,28 @@ class Evaluator:
                 f"交易次数不足({trades}), 建议放宽入场条件或增加交易对"
             )
 
-        if wtr < 0.10:
+        if total_profit < -50:
             recs.append(
-                "周达标率过低, 考虑: 1) 降低目标倍数 "
-                "2) 增加杠杆(风险更高) 3) 优化入场时机"
+                f"总收益严重亏损({total_profit:.1f}%), 需要根本性重构入场逻辑"
             )
-        elif wtr < 0.25:
+        elif total_profit < 0:
             recs.append(
-                "周达标率偏低, 建议优化出场策略(trailing stop 参数)"
+                f"总收益为负({total_profit:.1f}%), 优化止损和出场参数"
+            )
+
+        if win_rate < 0.3 and trades > 50:
+            recs.append(
+                f"胜率过低({win_rate:.0%}), 收紧入场条件提高信号质量"
+            )
+
+        if mdd > 60:
+            recs.append(
+                f"最大回撤过大({mdd:.1f}%), 降低杠杆或收紧止损"
+            )
+
+        if sharpe < 0 and trades > 50:
+            recs.append(
+                "Sharpe为负, 风险收益比不合理, 考虑改变入场方向或时机"
             )
 
         if avg_profit < 0:
@@ -260,8 +300,10 @@ class Evaluator:
             )
 
         if not recs:
-            if score > 50:
-                recs.append("策略表现良好, 可尝试微调 trailing stop 参数优化")
+            if score > 100:
+                recs.append("策略表现优秀, 可尝试微调 trailing stop 参数进一步优化")
+            elif score > 30:
+                recs.append("策略表现良好, 建议小幅调参精细优化")
             else:
                 recs.append("策略中等, 建议调整入场/出场参数组合")
 

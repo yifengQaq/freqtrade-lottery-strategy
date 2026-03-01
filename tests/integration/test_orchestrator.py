@@ -68,11 +68,14 @@ def _base_config(tmp_path) -> dict:
 def _good_metrics(score_tweak: float = 0.0) -> dict:
     """Metrics dict that passes all gate checks."""
     return {
-        "weekly_target_hit_rate": 0.30,
-        "max_drawdown_pct": 50.0,
+        "total_profit_pct": 80.0 + score_tweak,
+        "sharpe_ratio": 1.5,
+        "win_rate": 0.45,
+        "weekly_target_hit_rate": 0.15,
+        "max_drawdown_pct": 40.0,
         "total_trades": 100,
         "stake_limit_hit_count": 0,
-        "monthly_net_profit_avg": 50.0 + score_tweak,
+        "monthly_net_profit_avg": 50.0,
         "max_monthly_loss": 100.0,
         "avg_trade_duration_hours": 24.0,
         "avg_profit_per_trade_pct": 1.5,

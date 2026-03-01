@@ -18,18 +18,22 @@ from typing import Optional
 logger = logging.getLogger(__name__)
 
 DEFAULT_TARGET_PROFILE: dict = {
-    "weekly_target_hit_rate": 0.25,
-    "monthly_net_profit_avg": 100.0,
-    "max_monthly_loss": 200.0,
+    "total_profit_pct": 50.0,
+    "sharpe_ratio": 1.0,
+    "win_rate": 0.40,
     "max_drawdown_pct": 50.0,
+    "weekly_target_hit_rate": 0.10,
+    "monthly_net_profit_avg": 20.0,
 }
 
 # Default weights per metric (higher → more important in weighted norm)
 DEFAULT_WEIGHTS: dict[str, float] = {
-    "weekly_target_hit_rate": 2.0,
-    "monthly_net_profit_avg": 1.5,
-    "max_monthly_loss": 1.0,
+    "total_profit_pct": 2.0,
+    "sharpe_ratio": 1.5,
+    "win_rate": 1.0,
     "max_drawdown_pct": 1.0,
+    "weekly_target_hit_rate": 0.5,
+    "monthly_net_profit_avg": 1.0,
 }
 
 

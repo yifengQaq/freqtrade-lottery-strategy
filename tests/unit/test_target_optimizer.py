@@ -19,30 +19,36 @@ from agent.target_optimizer import TargetOptimizer, DEFAULT_TARGET_PROFILE
 def _metrics_at_target() -> dict:
     """Metrics that exactly match the default target profile."""
     return {
-        "weekly_target_hit_rate": 0.25,
-        "monthly_net_profit_avg": 100.0,
-        "max_monthly_loss": 200.0,
+        "total_profit_pct": 50.0,
+        "sharpe_ratio": 1.0,
+        "win_rate": 0.40,
         "max_drawdown_pct": 50.0,
+        "weekly_target_hit_rate": 0.10,
+        "monthly_net_profit_avg": 20.0,
     }
 
 
 def _metrics_below_target() -> dict:
     """Metrics clearly below target (large gap)."""
     return {
-        "weekly_target_hit_rate": 0.10,
-        "monthly_net_profit_avg": 30.0,
-        "max_monthly_loss": 350.0,
+        "total_profit_pct": -20.0,
+        "sharpe_ratio": -0.5,
+        "win_rate": 0.20,
         "max_drawdown_pct": 80.0,
+        "weekly_target_hit_rate": 0.02,
+        "monthly_net_profit_avg": -10.0,
     }
 
 
 def _metrics_near_target() -> dict:
     """Metrics almost at target (small gap)."""
     return {
-        "weekly_target_hit_rate": 0.24,
-        "monthly_net_profit_avg": 98.0,
-        "max_monthly_loss": 205.0,
+        "total_profit_pct": 48.0,
+        "sharpe_ratio": 0.95,
+        "win_rate": 0.39,
         "max_drawdown_pct": 51.0,
+        "weekly_target_hit_rate": 0.09,
+        "monthly_net_profit_avg": 19.0,
     }
 
 
@@ -64,12 +70,12 @@ class TestComputeGapVector:
         assert "weighted_norm" in gap
         assert "mode" in gap
 
-        # weekly_target_hit_rate: target=0.25, current=0.10 → delta = +0.15
-        assert gap["deltas"]["weekly_target_hit_rate"] == pytest.approx(0.15, abs=1e-4)
-        # monthly_net_profit_avg: target=100, current=30 → delta = +70
-        assert gap["deltas"]["monthly_net_profit_avg"] == pytest.approx(70.0, abs=1e-4)
-        # max_monthly_loss: target=200, current=350 → delta = +150 (over limit)
-        assert gap["deltas"]["max_monthly_loss"] == pytest.approx(150.0, abs=1e-4)
+        # total_profit_pct: target=50, current=-20 → delta = +70
+        assert gap["deltas"]["total_profit_pct"] == pytest.approx(70.0, abs=1e-4)
+        # sharpe_ratio: target=1.0, current=-0.5 → delta = +1.5
+        assert gap["deltas"]["sharpe_ratio"] == pytest.approx(1.5, abs=1e-4)
+        # win_rate: target=0.40, current=0.20 → delta = +0.20
+        assert gap["deltas"]["win_rate"] == pytest.approx(0.20, abs=1e-4)
         # max_drawdown_pct: target=50, current=80 → delta = +30 (over limit)
         assert gap["deltas"]["max_drawdown_pct"] == pytest.approx(30.0, abs=1e-4)
 
@@ -94,16 +100,16 @@ class TestWeightedNorm:
     def test_weighted_norm(self):
         opt = TargetOptimizer()
         # Manually check: only positive deltas contribute
-        deltas = {"weekly_target_hit_rate": 0.15, "monthly_net_profit_avg": 70.0,
-                  "max_monthly_loss": 150.0, "max_drawdown_pct": 30.0}
+        deltas = {"total_profit_pct": 70.0, "sharpe_ratio": 1.5,
+                  "win_rate": 0.20, "max_drawdown_pct": 30.0}
         norm = opt._weighted_norm(deltas)
         assert norm > 0.0
 
     def test_weighted_norm_all_met(self):
         """All deltas ≤ 0 → norm = 0."""
         opt = TargetOptimizer()
-        deltas = {"weekly_target_hit_rate": -0.05, "monthly_net_profit_avg": -20.0,
-                  "max_monthly_loss": -50.0, "max_drawdown_pct": -10.0}
+        deltas = {"total_profit_pct": -10.0, "sharpe_ratio": -0.5,
+                  "win_rate": -0.05, "max_drawdown_pct": -10.0}
         assert opt._weighted_norm(deltas) == 0.0
 
 
@@ -189,7 +195,7 @@ class TestGenerateAdjustment:
         steps = opt.suggest_step_sizes(gap)
 
         # gap should contain direction info via deltas (positive = needs increase)
-        assert gap["deltas"]["monthly_net_profit_avg"] > 0  # need to increase
+        assert gap["deltas"]["total_profit_pct"] > 0  # need to increase
 
         # steps should reflect explore mode for far-from-target metrics
         assert steps["max_param_changes"] >= 1

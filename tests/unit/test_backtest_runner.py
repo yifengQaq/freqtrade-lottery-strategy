@@ -199,9 +199,9 @@ class TestCalcWeeklyMetrics:
 
     def test_calc_weekly_target_hit_rate(self):
         """给定交易数据，计算周达标率"""
-        # Week 1: 1200 >= 1000 → hit
-        # Week 2: 800 < 1000 → miss
-        # Week 3: -50 < 1000 → miss
+        # Week 1: 1200 >= 200 → hit
+        # Week 2: 800 >= 200 → hit
+        # Week 3: -50 < 200 → miss
         trades = [
             {"close_date": "2025-10-01T12:00:00Z", "profit_abs": 1200.0},
             {"close_date": "2025-10-08T14:00:00Z", "profit_abs": 800.0},
@@ -210,8 +210,8 @@ class TestCalcWeeklyMetrics:
         result = BacktestRunner._calc_weekly_metrics(trades)
 
         assert result["total_weeks"] == 3
-        assert result["target_hit_weeks"] == 1
-        assert result["weekly_target_hit_rate"] == pytest.approx(1 / 3, abs=0.01)
+        assert result["target_hit_weeks"] == 2
+        assert result["weekly_target_hit_rate"] == pytest.approx(2 / 3, abs=0.01)
 
     def test_calc_weekly_metrics_all_hit(self):
         """所有周均达标"""

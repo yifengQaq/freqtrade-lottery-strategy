@@ -34,3 +34,12 @@ agent:
   factor_candidates: 5
 
   results_dir: "results"
+
+  # 目标指标 — 引导 LLM 优化方向
+  target_profile:
+    total_profit_pct: 50.0            # 总收益率目标 ≥50%
+    sharpe_ratio: 1.0                 # Sharpe 目标 ≥1.0
+    win_rate: 0.40                    # 胜率目标 ≥40%
+    max_drawdown_pct: 50.0            # 最大回撤 ≤50%
+    weekly_target_hit_rate: 0.10      # 周达标率 ≥10%
+    monthly_net_profit_avg: 20.0      # 月均利润 ≥20 USDT

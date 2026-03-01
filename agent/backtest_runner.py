@@ -419,17 +419,22 @@ class BacktestRunner:
         return metrics
 
     @staticmethod
-    def _calc_weekly_metrics(trades: list[dict]) -> dict:
+    def _calc_weekly_metrics(trades: list[dict], weekly_target: float = 200.0) -> dict:
         """
         Calculate OP-strategy-specific weekly metrics.
 
         Groups trades by ISO week and checks if weekly P&L >= target.
+
+        Args:
+            trades: list of trade dicts from freqtrade backtest result.
+            weekly_target: minimum weekly profit to count as "hit".
+                           Default 200 (= 2x on 100 USDT budget, achievable
+                           with rolling compounding in a few trades).
         """
         from collections import defaultdict
 
         weekly_pnl = defaultdict(float)
         weekly_budget = 100.0
-        weekly_target = 1000.0
 
         for trade in trades:
             # Parse close date

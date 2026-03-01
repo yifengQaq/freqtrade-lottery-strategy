@@ -14,13 +14,17 @@ from agent.evaluator import Evaluator, EvalResult, PassCriteria, ScoreWeights
 def make_metrics(**overrides) -> dict:
     """Return a fully-passing metrics dict; override individual fields as needed."""
     base = {
-        "weekly_target_hit_rate": 0.30,
-        "max_drawdown_pct": 50.0,
+        "total_profit_pct": 80.0,
+        "sharpe_ratio": 1.5,
+        "win_rate": 0.45,
+        "weekly_target_hit_rate": 0.15,
+        "max_drawdown_pct": 40.0,
         "total_trades": 100,
         "stake_limit_hit_count": 0,
         "monthly_net_profit_avg": 50.0,
         "max_monthly_loss": 100.0,
         "avg_trade_duration_hours": 24.0,
+        "avg_profit_per_trade_pct": 0.5,
     }
     base.update(overrides)
     return base
@@ -46,8 +50,8 @@ class TestGateChecks:
         assert result.gate_failures == []
 
     def test_gate_weekly_target_hit_rate_fail(self, evaluator: Evaluator):
-        """周达标率 0.10 < 0.25 → 失败"""
-        result = evaluator.evaluate(make_metrics(weekly_target_hit_rate=0.10))
+        """周达标率 0.05 < 0.10 → 失败"""
+        result = evaluator.evaluate(make_metrics(weekly_target_hit_rate=0.05))
         assert result.passed is False
         assert any("weekly_target_hit_rate" in f for f in result.gate_failures)
 
@@ -79,7 +83,7 @@ class TestGateChecks:
         """多项门控同时失败 → gate_failures 包含多项"""
         result = evaluator.evaluate(
             make_metrics(
-                weekly_target_hit_rate=0.10,
+                weekly_target_hit_rate=0.05,
                 total_trades=30,
                 stake_limit_hit_count=2,
             )
@@ -91,6 +95,24 @@ class TestGateChecks:
         assert "total_trades" in failure_text
         assert "stake_limit_hit_count" in failure_text
 
+    def test_gate_total_profit_pct_fail(self, evaluator: Evaluator):
+        """总收益 < -30% → 直接失败"""
+        result = evaluator.evaluate(make_metrics(total_profit_pct=-50.0))
+        assert result.passed is False
+        assert any("total_profit_pct" in f for f in result.gate_failures)
+
+    def test_gate_total_profit_pct_pass_boundary(self, evaluator: Evaluator):
+        """总收益 = -30% 精确边界 → 通过（不低于 -30%）"""
+        result = evaluator.evaluate(make_metrics(total_profit_pct=-30.0))
+        # -30.0 is NOT < -30.0, so this gate should pass
+        assert not any("total_profit_pct" in f for f in result.gate_failures)
+
+    def test_gate_max_drawdown_fail(self, evaluator: Evaluator):
+        """最大回撤 > 80% → 失败"""
+        result = evaluator.evaluate(make_metrics(max_drawdown_pct=85.0))
+        assert result.passed is False
+        assert any("max_drawdown_pct" in f for f in result.gate_failures)
+
 
 # ===================================================================
 # Score calculation
@@ -101,21 +123,25 @@ class TestScoreCalculation:
     """评分计算测试组"""
 
     def test_score_calculation(self, evaluator: Evaluator):
-        """给定已知指标，验证 score 与手算结果一致。
+        """v2 评分公式：给定已知指标，验证 score 与手算结果一致。
 
         Score =
-            50.0 * 0.4                     = 20.0
-          + 0.30 * 100 * 0.3              =  9.0
-          - 100.0 * 0.2                   = -20.0
-          + (1/24) * 0.1 * 100            ≈  0.4167
-          ≈ 9.42 (rounded)
+            80.0 * 0.35                     = 28.0
+          + 1.5 * 10 * 0.20                =  3.0
+          + 0.45 * 100 * 0.15              =  6.75
+          - 40.0 * 0.15                    = -6.0
+          + 50.0 * 0.10                    =  5.0
+          + (1/24) * 0.05 * 100            ≈  0.2083
+          ≈ 36.96
         """
         result = evaluator.evaluate(make_metrics())
         expected = (
-            50.0 * 0.4
-            + 0.30 * 100 * 0.3
-            - 100.0 * 0.2
-            + (1 / 24.0) * 0.1 * 100
+            80.0 * 0.35
+            + 1.5 * 10 * 0.20
+            + 0.45 * 100 * 0.15
+            - 40.0 * 0.15
+            + 50.0 * 0.10
+            + (1 / 24.0) * 0.05 * 100
         )
         assert result.score == pytest.approx(expected, abs=0.01)
 
@@ -136,12 +162,26 @@ class TestScoreCalculation:
         """score_breakdown 包含各分项"""
         result = evaluator.evaluate(make_metrics())
         expected_keys = {
+            "total_profit_component",
+            "sharpe_component",
+            "win_rate_component",
+            "drawdown_penalty",
             "monthly_profit_component",
-            "weekly_hit_rate_component",
-            "max_loss_penalty",
             "trade_efficiency_component",
         }
         assert set(result.score_breakdown.keys()) == expected_keys
+
+    def test_score_profit_dominates(self, evaluator: Evaluator):
+        """高收益策略得分必须高于亏损策略"""
+        profit_strategy = evaluator.evaluate(make_metrics(total_profit_pct=200.0))
+        loss_strategy = evaluator.evaluate(make_metrics(total_profit_pct=-50.0))
+        assert profit_strategy.score > loss_strategy.score
+
+    def test_score_sharpe_contributes(self, evaluator: Evaluator):
+        """更高 Sharpe 应该得到更高分数"""
+        high_sharpe = evaluator.evaluate(make_metrics(sharpe_ratio=3.0))
+        low_sharpe = evaluator.evaluate(make_metrics(sharpe_ratio=0.0))
+        assert high_sharpe.score > low_sharpe.score
 
 
 # ===================================================================
