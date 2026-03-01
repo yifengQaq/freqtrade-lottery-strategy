@@ -233,19 +233,30 @@ function renderRoundsTable(rounds) {
                         r.status === 'failed' ? 'status-failed' : 'status-running';
     const statusIcon = r.status === 'success' ? '✅' :
                        r.status === 'failed' ? '❌' : '⏳';
-    const fixBadge = r.auto_fix ? '<span class="fix-badge">🔧 Auto-fix</span>' : '';
+    const fixIcon = r.auto_fix ? '🔧' : '';
     const evalScore = r.eval_score ? r.eval_score.toFixed(2) : '-';
-    const gapScore = r.weighted_norm ? r.weighted_norm.toFixed(4) : '-';
+
+    // Profit metrics
+    const profit = fmtNum(r.profit_pct, 2, true);
+    const maxDD = fmtNum(r.max_dd_pct, 1, false, true);
+    const trades = r.total_trades != null ? r.total_trades : '-';
+    const winRate = r.win_rate != null ? (r.win_rate * 100).toFixed(1) + '%' : '-';
+    const sharpe = fmtNum(r.sharpe, 2, true);
+    const pf = fmtNum(r.profit_factor, 2);
 
     return `<tr>
       <td>${r.epoch || '-'}</td>
       <td><strong>R${r.round}</strong></td>
       <td>${evalScore}</td>
-      <td class="${statusClass}" style="font-size:0.8em">${gapScore}</td>
-      <td class="${statusClass}">${statusIcon} ${r.status}</td>
-      <td>${fixBadge}</td>
-      <td>${r.timestamp || '-'}</td>
-      <td title="${r.description || ''}">${truncate(r.description || '-', 60)}</td>
+      <td>${profit}</td>
+      <td>${maxDD}</td>
+      <td>${trades}</td>
+      <td>${winRate}</td>
+      <td>${sharpe}</td>
+      <td>${pf}</td>
+      <td class="${statusClass}">${statusIcon}</td>
+      <td>${fixIcon}</td>
+      <td title="${r.description || ''}">${truncate(r.description || '-', 50)}</td>
     </tr>`;
   }).join('');
 }
@@ -543,6 +554,24 @@ async function controlAgent(action) {
 }
 
 // ===== Helpers =====
+function fmtNum(val, decimals, colorSign, invertColor) {
+  if (val == null || val === undefined) return '-';
+  const n = Number(val);
+  if (isNaN(n)) return '-';
+  const s = n.toFixed(decimals);
+  if (colorSign) {
+    const positive = invertColor ? n < 0 : n > 0;
+    const cls = positive ? 'status-success' : (n < 0 ? 'status-failed' : '');
+    return `<span class="${cls}">${s}</span>`;
+  }
+  if (invertColor) {
+    // For drawdown: red if high
+    const cls = n > 50 ? 'status-failed' : n > 30 ? 'status-running' : 'status-success';
+    return `<span class="${cls}">${s}</span>`;
+  }
+  return s;
+}
+
 function truncate(str, maxLen) {
   if (!str) return '';
   return str.length > maxLen ? str.substring(0, maxLen) + '…' : str;

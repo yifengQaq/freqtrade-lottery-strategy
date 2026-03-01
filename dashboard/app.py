@@ -312,7 +312,7 @@ async def get_rounds():
             rd["deltas"] = gap.get("deltas", {})
             rd["mode"] = gap.get("mode", "")
 
-    # Merge evaluator scores from iteration_log.json
+    # Merge evaluator scores + backtest metrics from iteration_log.json
     eval_map = {r["round"]: r for r in iter_log}
     for rd in rounds:
         ev = eval_map.get(rd["round"])
@@ -321,6 +321,16 @@ async def get_rounds():
             rd["eval_status"] = ev.get("status", "")
             if not rd.get("description") and ev.get("changes_made"):
                 rd["description"] = ev["changes_made"]
+            # Attach key backtest metrics
+            bm = ev.get("backtest_metrics", {})
+            if bm:
+                rd["profit_pct"] = bm.get("total_profit_pct")
+                rd["max_dd_pct"] = bm.get("max_drawdown_pct")
+                rd["total_trades"] = bm.get("total_trades")
+                rd["win_rate"] = bm.get("win_rate")
+                rd["sharpe"] = bm.get("sharpe_ratio")
+                rd["profit_factor"] = bm.get("profit_factor")
+                rd["avg_profit"] = bm.get("avg_profit_per_trade_pct")
 
     return {"rounds": rounds, "epoch_resets": log_events.get("epochs", [])}
 
