@@ -8,6 +8,7 @@ Run:
     cd /path/to/project
     source .venv/bin/activate
     uvicorn dashboard.app:app --reload --port 8501
+    # or: DASHBOARD_PORT=8511 ./scripts/run_dashboard.sh
 """
 
 from __future__ import annotations

@@ -1,0 +1,158 @@
+2026-03-02 09:40:05,704 [INFO] v2ex_agent: Starting iteration loop (max_rounds=10)
+2026-03-02 09:40:05,705 [INFO] agent.orchestrator: ===== Round 1 / 10 =====
+2026-03-02 09:40:05,705 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-02 09:40:05,705 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-02 09:40:24,423 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-02 09:40:24,423 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-02 09:40:39,110 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-02 09:40:39,111 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-02 09:40:50,066 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-02 09:40:50,066 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-02 09:41:02,287 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-02 09:41:02,287 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-02 09:41:14,767 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-02 09:41:14,988 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-02 09:42:48,101 [INFO] agent.deepseek_client: DeepSeek response: 15630 tokens (attempt 1)
+2026-03-02 09:42:48,110 [INFO] agent.strategy_modifier: Strategy updated (round 1). Backup: results/strategy_versions/round_001_20260302_094248__入场重构__使用MACD金叉_死叉___布林带突破___ADX趋势强度组合.py
+2026-03-02 09:42:48,110 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-02 09:42:48,110 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-02 09:43:58,508 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250701-20251231
+2026-03-02 09:44:07,854 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-02 09:45:15,833 [INFO] agent.orchestrator: ===== Round 2 / 10 =====
+2026-03-02 09:45:15,834 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-02 09:45:15,834 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-02 09:45:23,431 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-02 09:45:23,431 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-02 09:45:31,842 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-02 09:45:31,842 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-02 09:45:38,893 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-02 09:45:38,894 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-02 09:45:46,842 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-02 09:45:46,842 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-02 09:45:55,031 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-02 09:45:55,253 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-02 09:47:28,779 [INFO] agent.deepseek_client: DeepSeek response: 14151 tokens (attempt 1)
+2026-03-02 09:47:28,784 [INFO] agent.strategy_modifier: Strategy updated (round 2). Backup: results/strategy_versions/round_002_20260302_094728__出场重构__稳健ROI梯度_紧跟trailing_stop_收紧stoploss.py
+2026-03-02 09:47:28,785 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-02 09:47:28,785 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-02 09:48:52,158 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250701-20251231
+2026-03-02 09:49:03,155 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-02 09:50:30,110 [INFO] agent.orchestrator: ===== Round 3 / 10 =====
+2026-03-02 09:50:30,111 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-02 09:50:30,114 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-02 09:50:39,818 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-02 09:50:39,819 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-02 09:50:53,459 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-02 09:50:53,459 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-02 09:51:04,445 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-02 09:51:04,445 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-02 09:51:17,024 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-02 09:51:17,025 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-02 09:51:30,079 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-02 09:51:30,310 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-02 09:53:06,966 [INFO] agent.deepseek_client: DeepSeek response: 14021 tokens (attempt 1)
+2026-03-02 09:53:06,972 [WARNING] agent.strategy_modifier: Auto-fixed LLM typos in strategy code: {'current_alance->current_balance': 1}
+2026-03-02 09:53:06,984 [INFO] agent.strategy_modifier: Strategy updated (round 3). Backup: results/strategy_versions/round_003_20260302_095306__风控重构__杠杆5x___stoploss__0_20___ROI梯度优化.py
+2026-03-02 09:53:06,985 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-02 09:53:06,986 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-02 09:54:34,286 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250701-20251231
+2026-03-02 09:54:45,680 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-02 09:56:06,743 [INFO] agent.strategy_modifier: Rolled back to round 2: results/strategy_versions/round_002_20260302_094728__出场重构__稳健ROI梯度_紧跟trailing_stop_收紧stoploss.py
+2026-03-02 09:56:06,744 [WARNING] agent.orchestrator: Overfitting detected — rolled back to round 2
+2026-03-02 09:56:06,744 [INFO] agent.orchestrator: ===== Round 4 / 10 =====
+2026-03-02 09:56:06,744 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-02 09:56:06,744 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-02 09:56:15,695 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-02 09:56:15,695 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-02 09:56:25,596 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-02 09:56:25,596 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-02 09:56:33,764 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-02 09:56:33,765 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-02 09:56:43,395 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-02 09:56:43,395 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-02 09:56:53,060 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-02 09:56:53,284 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-02 09:58:43,179 [INFO] agent.deepseek_client: DeepSeek response: 14692 tokens (attempt 1)
+2026-03-02 09:58:43,185 [INFO] agent.strategy_modifier: Strategy updated (round 4). Backup: results/strategy_versions/round_004_20260302_095843__信号结构重构__分组OR入场_趋势突破_超卖反弹_动量反转____ATR波动率过滤___出场ADX.py
+2026-03-02 09:58:43,185 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-02 09:58:43,185 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-02 10:00:27,050 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250701-20251231
+2026-03-02 10:00:41,412 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-02 10:02:42,302 [INFO] agent.strategy_modifier: Rolled back to round 3: results/strategy_versions/round_003_20260302_095306__风控重构__杠杆5x___stoploss__0_20___ROI梯度优化.py
+2026-03-02 10:02:42,302 [WARNING] agent.orchestrator: Overfitting detected — rolled back to round 3
+2026-03-02 10:02:42,303 [INFO] agent.orchestrator: ===== Round 5 / 10 =====
+2026-03-02 10:02:42,303 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-02 10:02:42,303 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-02 10:02:53,449 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-02 10:02:53,449 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-02 10:03:05,684 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-02 10:03:05,685 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-02 10:03:17,638 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-02 10:03:17,638 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-02 10:03:31,000 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-02 10:03:31,001 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-02 10:03:44,498 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-02 10:03:44,739 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-02 10:05:35,698 [INFO] agent.deepseek_client: DeepSeek response: 15955 tokens (attempt 1)
+2026-03-02 10:05:35,708 [INFO] agent.strategy_modifier: Strategy updated (round 5). Backup: results/strategy_versions/round_005_20260302_100535__入场重构__增加RSI_50和ATR扩张过滤_调整MACD_ADX参数_提高胜率.py
+2026-03-02 10:05:35,709 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-02 10:05:35,709 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-02 10:06:37,785 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250701-20251231
+2026-03-02 10:06:47,785 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-02 10:07:47,926 [INFO] agent.strategy_modifier: Rolled back to round 4: results/strategy_versions/round_004_20260302_095843__信号结构重构__分组OR入场_趋势突破_超卖反弹_动量反转____ATR波动率过滤___出场ADX.py
+2026-03-02 10:07:47,927 [WARNING] agent.orchestrator: Overfitting detected — rolled back to round 4
+2026-03-02 10:07:47,928 [INFO] agent.orchestrator: ===== Round 6 / 10 =====
+2026-03-02 10:07:47,929 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-02 10:07:47,929 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-02 10:07:55,280 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-02 10:07:55,280 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-02 10:08:04,489 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-02 10:08:04,489 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-02 10:08:12,672 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-02 10:08:12,673 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-02 10:08:21,570 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-02 10:08:21,570 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-02 10:08:30,571 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-02 10:08:30,797 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-02 10:10:20,406 [INFO] agent.deepseek_client: DeepSeek response: 16092 tokens (attempt 1)
+2026-03-02 10:10:20,417 [INFO] agent.strategy_modifier: Strategy updated (round 6). Backup: results/strategy_versions/round_006_20260302_101020__入场重构__添加RSI_50和STOCHRSI_50动量确认_ADX阈值从25提高到30_增加AT.py
+2026-03-02 10:10:20,418 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-02 10:10:20,418 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-02 10:11:14,352 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250701-20251231
+2026-03-02 10:11:23,294 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-02 10:12:17,248 [INFO] agent.strategy_modifier: Rolled back to round 5: results/strategy_versions/round_005_20260302_100535__入场重构__增加RSI_50和ATR扩张过滤_调整MACD_ADX参数_提高胜率.py
+2026-03-02 10:12:17,249 [WARNING] agent.orchestrator: Overfitting detected — rolled back to round 5
+2026-03-02 10:12:17,249 [INFO] agent.orchestrator: ===== Round 7 / 10 =====
+2026-03-02 10:12:17,249 [INFO] agent.comparator: Running backtest for window 'bull_2021' (20210101-20210501)
+2026-03-02 10:12:17,249 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20210501
+2026-03-02 10:12:25,636 [INFO] agent.comparator: Running backtest for window 'bear_2022' (20220501-20221001)
+2026-03-02 10:12:25,636 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20220501-20221001
+2026-03-02 10:12:34,382 [INFO] agent.comparator: Running backtest for window 'sideways_2023' (20230601-20231001)
+2026-03-02 10:12:34,382 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20230601-20231001
+2026-03-02 10:12:42,107 [INFO] agent.comparator: Running backtest for window 'recovery_2024' (20240101-20240601)
+2026-03-02 10:12:42,107 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20240101-20240601
+2026-03-02 10:12:49,592 [INFO] agent.comparator: Running backtest for window 'recent_2025' (20250101-20250601)
+2026-03-02 10:12:49,592 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250101-20250601
+2026-03-02 10:12:57,456 [INFO] agent.comparator: Comparison matrix saved to results/comparisons/comparison_matrix.json
+2026-03-02 10:12:57,691 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-02 10:14:56,225 [INFO] agent.deepseek_client: DeepSeek response: 14909 tokens (attempt 1)
+2026-03-02 10:14:56,244 [INFO] agent.strategy_modifier: Strategy updated (round 7). Backup: results/strategy_versions/round_007_20260302_101456__信号重构__分组OR入场_核心过滤器_出场优化.py
+2026-03-02 10:14:56,247 [INFO] agent.orchestrator: Synced strategy to user_data/strategies/LotteryMindsetStrategy.py
+2026-03-02 10:14:56,248 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-02 10:15:59,239 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20250701-20251231
+2026-03-02 10:16:08,607 [INFO] agent.backtest_runner: Running backtest: /Users/ts/Futures_strategy/V2ex-Agent-Dev/freqtrade_env/bin/freqtrade backtesting --config config/config_backtest.json --userdir user_data --strategy LotteryMindsetStrategy --export trades --export-filename user_data/backtest_results/backtest-result.json --timerange 20210101-20251231
+2026-03-02 10:17:09,212 [INFO] agent.orchestrator: Terminating: No improvement in last 3 successful rounds (scores: [13.45, 13.45, 1.11])
+2026-03-02 10:17:09,218 [INFO] agent.weekly_settlement: Settlement report saved to results/weekly/weekly_settlement_reports.jsonl
+2026-03-02 10:17:09,218 [INFO] agent.orchestrator: Weekly settlement: week=2026-W10 status=WEEK_END_SETTLED pnl=0.00 action=reset_budget_100
+2026-03-02 10:17:09,227 [INFO] agent.orchestrator: Iteration log saved to results/iteration_log.json
+
+============================================================
+Completed 7 rounds
+  Round  1 [✓     success] score=  13.45  [入场重构] 使用MACD金叉/死叉 + 布林带突破 + ADX趋势强度组合
+  Round  2 [✓     success] score=  13.45  [出场重构] 稳健ROI梯度+紧跟trailing stop+收紧stoploss
+  Round  3 [⚠ overfitting] score=  -4.17  [风控重构] 杠杆5x + stoploss -0.20 + ROI梯度优化
+  Round  4 [⚠ overfitting] score=  66.52  [信号结构重构] 分组OR入场(趋势突破+超卖反弹+动量反转) + ATR波动率过滤 + 出场ADX过滤
+  Round  5 [⚠ overfitting] score=  48.41  [入场重构] 增加RSI>50和ATR扩张过滤，调整MACD/ADX参数，提高胜率
+  Round  6 [⚠ overfitting] score= -16.82  [入场重构] 添加RSI>50和STOCHRSI>50动量确认，ADX阈值从25提高到30，增加ATR扩张过滤
+  Round  7 [✓     success] score=   1.11  [信号重构] 分组OR入场+核心过滤器+出场优化
+============================================================

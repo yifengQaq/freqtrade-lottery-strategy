@@ -69,35 +69,28 @@ class WeeklyBudgetController:
 class LotteryMindsetStrategy(IStrategy):
     INTERFACE_VERSION = 3
     timeframe = "15m"
-    stoploss = -0.35
+    stoploss = -0.25
     minimal_roi = {
-        "0": 1.0,
-        "15": 0.5,
-        "30": 0.2,
-        "60": 0.05,
+        "60": 1.00,
+        "120": 0.50,
+        "240": 0.20,
     }
-    trailing_stop = False
+    trailing_stop = True
+    trailing_stop_positive = 0.01
+    trailing_stop_positive_offset = 0.02
+    trailing_only_offset_is_reached = True
     max_open_trades = 1
     stake_amount = "unlimited"
     leverage_value = 3
-    stoch_fastk = IntParameter(3, 14, default=5, space="buy", optimize=True)
-    stoch_slowk = IntParameter(2, 5, default=3, space="buy", optimize=True)
-    stoch_slowd = IntParameter(2, 5, default=3, space="buy", optimize=True)
-    stoch_oversold = IntParameter(10, 30, default=20, space="buy", optimize=True)
-    stoch_overbought = IntParameter(70, 90, default=80, space="buy", optimize=True)
-    cci_period = IntParameter(7, 28, default=14, space="buy", optimize=True)
-    cci_threshold = IntParameter(80, 200, default=150, space="buy", optimize=True)
-    rsi_period = IntParameter(7, 21, default=14, space="buy", optimize=True)
-    rsi_bull_threshold = IntParameter(45, 60, default=55, space="buy", optimize=True)
-    adx_period = IntParameter(7, 28, default=14, space="buy", optimize=True)
-    adx_threshold = IntParameter(15, 40, default=25, space="buy", optimize=True)
+    macd_fast = IntParameter(8, 16, default=12, space="buy", optimize=True)
+    macd_slow = IntParameter(20, 34, default=26, space="buy", optimize=True)
+    macd_signal = IntParameter(5, 14, default=9, space="buy", optimize=True)
     bbands_period = IntParameter(10, 30, default=20, space="buy", optimize=True)
     bbands_std = DecimalParameter(1.5, 3.0, default=2.0, space="buy", optimize=True)
-    mfi_period = IntParameter(7, 21, default=14, space="buy", optimize=True)
-    mfi_bull_threshold = IntParameter(50, 70, default=60, space="buy", optimize=True)
-    atr_period = IntParameter(7, 21, default=14, space="buy", optimize=True)
-    atr_ma_window = IntParameter(20, 100, default=50, space="buy", optimize=True)
-    atr_multiplier = DecimalParameter(0.8, 2.0, default=1.2, space="buy", optimize=True)
+    adx_period = IntParameter(7, 28, default=14, space="buy", optimize=True)
+    adx_threshold = IntParameter(15, 40, default=25, space="buy", optimize=True)
+    rsi_period = IntParameter(10, 20, default=14, space="buy", optimize=True)
+    atr_period = IntParameter(10, 20, default=14, space="buy", optimize=True)
     process_only_new_candles = True
     startup_candle_count: int = 100
     use_exit_signal = True
@@ -145,68 +138,76 @@ class LotteryMindsetStrategy(IStrategy):
         return stake
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        stoch = ta.STOCH(dataframe, fastk_period=int(self.stoch_fastk.value), slowk_period=int(self.stoch_slowk.value), slowd_period=int(self.stoch_slowd.value))
-        dataframe["stoch_k"] = stoch["slowk"]
-        dataframe["stoch_d"] = stoch["slowd"]
-        dataframe["cci"] = ta.CCI(dataframe, timeperiod=int(self.cci_period.value))
-        dataframe["rsi"] = ta.RSI(dataframe, timeperiod=int(self.rsi_period.value))
+        macd_df = ta.MACD(dataframe, fastperiod=int(self.macd_fast.value), slowperiod=int(self.macd_slow.value), signalperiod=int(self.macd_signal.value))
+        dataframe["macd"] = macd_df["macd"]
+        dataframe["macd_signal"] = macd_df["macdsignal"]
+        dataframe["macd_hist"] = macd_df["macdhist"]
+        bollinger = ta.BBANDS(dataframe, timeperiod=int(self.bbands_period.value), nbdevup=float(self.bbands_std.value), nbdevdn=float(self.bbands_std.value))
+        dataframe["bb_upper"] = bollinger["upperband"]
+        dataframe["bb_middle"] = bollinger["middleband"]
+        dataframe["bb_lower"] = bollinger["lowerband"]
         dataframe["adx"] = ta.ADX(dataframe, timeperiod=int(self.adx_period.value))
-        bbands = ta.BBANDS(dataframe, timeperiod=int(self.bbands_period.value), nbdevup=float(self.bbands_std.value), nbdevdn=float(self.bbands_std.value))
-        dataframe["bb_upper"] = bbands["upperband"]
-        dataframe["bb_middle"] = bbands["middleband"]
-        dataframe["bb_lower"] = bbands["lowerband"]
-        dataframe["mfi"] = ta.MFI(dataframe, timeperiod=int(self.mfi_period.value))
+        dataframe["rsi"] = ta.RSI(dataframe, timeperiod=int(self.rsi_period.value))
         dataframe["atr"] = ta.ATR(dataframe, timeperiod=int(self.atr_period.value))
-        dataframe["atr_ma"] = dataframe["atr"].rolling(window=int(self.atr_ma_window.value)).mean()
-        dataframe["atr_expansion"] = dataframe["atr"] > dataframe["atr_ma"] * float(self.atr_multiplier.value)
+        dataframe["atr_ma"] = dataframe["atr"].rolling(window=50).mean()
+        dataframe["atr_expansion"] = dataframe["atr"] > dataframe["atr_ma"] * 1.2
+        dataframe["ema_fast"] = ta.EMA(dataframe, timeperiod=9)
+        dataframe["ema_slow"] = ta.EMA(dataframe, timeperiod=21)
         return dataframe
 
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        # 核心信号：MACD金叉/死叉
+        core_long_signal = (dataframe["macd"] > dataframe["macd_signal"])
+        core_short_signal = (dataframe["macd"] < dataframe["macd_signal"])
+        
+        # 过滤器1：趋势强度（ADX）
+        trend_filter = (dataframe["adx"] > int(self.adx_threshold.value))
+        
+        # 过滤器2：波动率扩张（ATR）
+        vol_filter = (dataframe["atr_expansion"])
+        
+        # 过滤器3：成交量确认
+        volume_filter = (dataframe["volume"] > dataframe["volume"].rolling(window=20).mean() * 0.8)
+        
+        # 做多入场：MACD金叉 + 趋势强 + 波动扩张 + 成交量确认
         long_conditions = (
-            (dataframe["stoch_k"] > dataframe["stoch_d"])  # STOCH金叉
-            & (dataframe["stoch_k"] < int(self.stoch_overbought.value))  # 非超买
-            & (dataframe["cci"] > int(self.cci_threshold.value))  # CCI动量确认
-            & (dataframe["rsi"] > int(self.rsi_bull_threshold.value))  # RSI动量确认
-            & (dataframe["adx"] > int(self.adx_threshold.value))  # ADX趋势强度
-            & (dataframe["close"] > dataframe["bb_middle"])  # 价格在布林中轨之上
-            & (dataframe["mfi"] > int(self.mfi_bull_threshold.value))  # MFI资金流入确认
-            & (dataframe["atr_expansion"])  # ATR扩张过滤低波动
+            core_long_signal &
+            trend_filter &
+            vol_filter &
+            volume_filter
         )
         dataframe.loc[long_conditions, "enter_long"] = 1
-        dataframe.loc[long_conditions, "enter_tag"] = "stoch_cci_rsi_adx_bb_mfi_atr_long"
+        dataframe.loc[long_conditions, "enter_tag"] = "core_filter_long"
+        
+        # 做空入场：MACD死叉 + 趋势强 + 波动扩张 + 成交量确认
         short_conditions = (
-            (dataframe["stoch_k"] < dataframe["stoch_d"])  # STOCH死叉
-            & (dataframe["stoch_k"] > int(self.stoch_oversold.value))  # 非超卖
-            & (dataframe["cci"] < -int(self.cci_threshold.value))  # CCI动量确认
-            & (dataframe["rsi"] < 45)  # RSI动量确认
-            & (dataframe["adx"] > int(self.adx_threshold.value))  # ADX趋势强度
-            & (dataframe["close"] < dataframe["bb_middle"])  # 价格在布林中轨之下
-            & (dataframe["mfi"] < 40)  # MFI资金流出确认
-            & (dataframe["atr_expansion"])  # ATR扩张过滤低波动
+            core_short_signal &
+            trend_filter &
+            vol_filter &
+            volume_filter
         )
         dataframe.loc[short_conditions, "enter_short"] = 1
-        dataframe.loc[short_conditions, "enter_tag"] = "stoch_cci_rsi_adx_bb_mfi_atr_short"
+        dataframe.loc[short_conditions, "enter_tag"] = "core_filter_short"
+        
         return dataframe
 
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        # 做多出场：MACD死叉 + 价格跌破EMA快线
         long_exit = (
-            (dataframe["stoch_k"] < dataframe["stoch_d"])  # STOCH死叉出场
-            | (dataframe["stoch_k"] > int(self.stoch_overbought.value))  # 超买出场
-            | (dataframe["cci"] < 0)  # CCI转弱出场
-            | (dataframe["rsi"] < 50)  # RSI转弱出场
-            | (dataframe["mfi"] < 50)  # MFI转弱出场
+            (dataframe["macd"] < dataframe["macd_signal"]) &
+            (dataframe["close"] < dataframe["ema_fast"])
         )
         dataframe.loc[long_exit, "exit_long"] = 1
-        dataframe.loc[long_exit, "exit_tag"] = "stoch_cci_rsi_mfi_exit_long"
+        dataframe.loc[long_exit, "exit_tag"] = "macd_ema_exit_long"
+        
+        # 做空出场：MACD金叉 + 价格突破EMA快线
         short_exit = (
-            (dataframe["stoch_k"] > dataframe["stoch_d"])  # STOCH金叉出场
-            | (dataframe["stoch_k"] < int(self.stoch_oversold.value))  # 超卖出场
-            | (dataframe["cci"] > 0)  # CCI转强出场
-            | (dataframe["rsi"] > 50)  # RSI转强出场
-            | (dataframe["mfi"] > 50)  # MFI转强出场
+            (dataframe["macd"] > dataframe["macd_signal"]) &
+            (dataframe["close"] > dataframe["ema_fast"])
         )
         dataframe.loc[short_exit, "exit_short"] = 1
-        dataframe.loc[short_exit, "exit_tag"] = "stoch_cci_rsi_mfi_exit_short"
+        dataframe.loc[short_exit, "exit_tag"] = "macd_ema_exit_short"
+        
         return dataframe
 
     def confirm_trade_entry(
